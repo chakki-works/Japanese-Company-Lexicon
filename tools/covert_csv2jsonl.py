@@ -112,10 +112,10 @@ if __name__ == "__main__":
   print('Total companies are: {}'.format(len(company.data)))
   print('Unique companies are: {}\n'.format(len(company.names)))
 
-  output_file = os.path.join(OUTPUT_DIR, 'hojin.jsonl')
+  output_file = os.path.join(OUTPUT_DIR, 'company.jsonl')
   company.save_jsonl(output_file)
 
-  output_file = os.path.join(OUTPUT_DIR, 'hojin_names.csv')
+  output_file = os.path.join(OUTPUT_DIR, 'company_frequency.csv')
   company.save_names(output_file)
   
   print("Covnert CSV to JSONL Done!")
