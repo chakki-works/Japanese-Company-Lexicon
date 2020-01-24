@@ -198,7 +198,7 @@ def save_names(x_corporation, y_corporation, output_file) -> None:
       tag_list = get_tag_list(x_sample, y_sample)
       for tag in tag_list:
         tag_text = ''.join(tag['text']) 
-        if len(tag_text) != 0: # 因为有一个tag是空字符串，所以这里添加if
+        if len(tag_text) != 0: # in case that tag is a empty string
           all_tags.append(tag_text) 
         else:
           print(x_sample)
@@ -267,15 +267,15 @@ if __name__ == "__main__":
   mainichi_path1 = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_3corporation.jsonl')
   mainichi_path2 = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_1company.jsonl')
   mainichi_path3 = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_3corporation_names.jsonl')
-  mainichi_path4 = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_1company_names.csv')
-  mainichi_path5 = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_1company_names.bio')
+  mainichi_path4 = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_names.csv')
+  mainichi_path5 = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')
 
   bccwj_path = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_dataset.tsv')
   bccwj_path1 = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_3corporation.jsonl')
   bccwj_path2 = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_1company.jsonl')
   bccwj_path3 = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_3corporation_names.csv')
-  bccwj_path4 = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_1company_names.csv')
-  bccwj_path5 = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_1company_names.bio')
+  bccwj_path4 = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_names.csv')
+  bccwj_path5 = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj.bio')
 
   print('=== Preprocess mainnichi ===')
   main(mainichi_path, mainichi_path1, mainichi_path2, mainichi_path3, mainichi_path4, mainichi_path5)

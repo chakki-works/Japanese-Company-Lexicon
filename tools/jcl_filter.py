@@ -20,8 +20,17 @@ def filter_name(names, lower_length=2, upper_length=30):
         result.add(name)
   return list(result)
 
+def save_file(output_path, names):
+  with open(output_path, 'w', encoding='utf-8') as f:
+    for name in names:
+      f.write('{}\n'.format(name))
+    print("Generate filterd file to: {}".format(output_path))
+    print()
+
 def jcl_pipeline(path):
   print('JCL filtered files generation process...')
+  lower_length = 2
+  upper_length = 30
   # Read
   input_path = Path(os.path.join(ROOT_DIR, path))
   names = list()
@@ -29,20 +38,22 @@ def jcl_pipeline(path):
     for name in f:
       names.append(name.strip())
   
-  # Filter the digits, and the company names with proper length
-  lower_length = 2
-  upper_length = 30
+  if 'full' in input_path.name:
+    print('No filtering, name count: {}'.format(len(names)))
+    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output', input_path.name)
+    save_file(output_path, names)
+    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output/jcl_medium.csv')
+  else:
+    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output', input_path.name) 
+
+  # Filter the digits, and the company names with proper length  
   print('Before filtering lower length: {}, name counts: {}'.format(lower_length, len(names)))
   names = filter_name(names, lower_length=lower_length, upper_length=upper_length)
   print('After filtering lower length: {}, name counts: {}'.format(lower_length, len(names)))
 
   # Generate final JCL lexicon
-  output_path = os.path.join(ROOT_DIR, 'data/dictionaries', input_path.name)
-  with open(output_path, 'w', encoding='utf-8') as f:
-    for name in names:
-      f.write('{}\n'.format(name))
-    print("Generate filterd file to: {}".format(output_path))
-    print()
+  save_file(output_path, names)
+
 
 if __name__ == "__main__":
     paths = ['data/hojin/output/jcl_full.csv', 'data/hojin/output/jcl_slim.csv']

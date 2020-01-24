@@ -154,8 +154,8 @@ class AliasGenerator:
     print('Begin to remove special character ...')
     #  remove specical character
     for company in tqdm(self.data):
-      company['no_special'] = re.sub(r"[\'|・|.|’|^|&|-]+", '', company['name'])
-      company['no_legal_no_special'] = re.sub(r"[\'|・|.|’|^|&|-]+", '', company['no_legal'])
+      company['no_special'] = re.sub(r"[\'|・|.|’|^|&|,|、|-]+", '', company['name'])
+      company['no_legal_no_special'] = re.sub(r"[\'|・|.|’|^|&|,|、|-]+", '', company['no_legal'])
 
   def en_normalization(self):
     """Normalize the EN company names

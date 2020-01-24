@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class Annotator(object):
     """
     Annotates named-entity tag with Wikipedia text.

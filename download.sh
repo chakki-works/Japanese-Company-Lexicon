@@ -11,6 +11,15 @@ reset=`tput sgr0`
 echo ${green}=== Hojin Data Preparation ===${reset}
 
 ### Create directories ###
+
+# corpora, dictionaries
+mkdir -p data/corpora/{bccwj,mainichi,output}
+mkdir -p data/dictionaries/{ipadic,ipadic-neologd,juman,output}
+
+# model
+mkdir ckpts
+
+# hojin data
 echo Create Directories...
 mkdir -p data/hojin/{csv,zip,output}
 echo "  $HOJIN_ZIP, $HOJIN_CSV, $HOJIN_OUTPUT"
