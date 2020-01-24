@@ -1,7 +1,10 @@
 ### Editor ###
 .vscode
 
-### dataa ###
+### model ###
+ckpts/*
+
+### data ###
 playground/data/*
 data/*
 !.gitkeep
