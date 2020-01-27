@@ -1,10 +1,10 @@
 import time
 from collections import Counter
 
-from models.crf import CRFModel
-from models.bilstm_crf import BILSTM_Model
-from utils import save_model, flatten_lists
-from metrics import Metrics
+from .crf import CRFModel
+from .bilstm_crf import BILSTM_Model
+from .utils import save_model, flatten_lists
+from .metrics import Metrics
 
 
 def crf_train_eval(train_data, test_data, remove_O=False):

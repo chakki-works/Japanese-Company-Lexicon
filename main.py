@@ -3,9 +3,10 @@ import os
 import glob
 from pathlib import Path
 
-from utils import ROOT_DIR
-from utils import extend_maps, prepocess_data_for_lstmcrf, build_map, load_data_and_labels
-from evaluate import crf_train_eval, bilstm_train_and_eval
+from models.utils import ROOT_DIR
+from models.utils import extend_maps, prepocess_data_for_lstmcrf, build_map, load_data_and_labels
+from models.evaluate import crf_train_eval, bilstm_train_and_eval
+
 
 def split_data(sents, glod_labels, tag_labels, dev=False, train_ratio=0.7, dev_ratio=0.85):
     if not dev:

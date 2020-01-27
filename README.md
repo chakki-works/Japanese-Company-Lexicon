@@ -45,7 +45,7 @@ mv chromedriver /usr/local/bin
 
 Downloading hojin data:
 ```bash
-sh download.sh
+sh scripts/download.sh
 ```
 
 
@@ -71,7 +71,7 @@ sh download.sh
 
 Generating alias
 ```bash
-sh generate_alias.sh
+sh scripts/generate_alias.sh
 ```
 
 Untill now, the JCL lexicon is prepared. 

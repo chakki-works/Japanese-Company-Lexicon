@@ -1,6 +1,6 @@
 from sklearn_crfsuite import CRF
 
-from .util import sent2features
+from .tools import sent2features
 
 
 class CRFModel(object):

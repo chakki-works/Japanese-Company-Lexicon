@@ -1,6 +1,6 @@
 from collections import Counter
 
-from utils import flatten_lists
+from .utils import flatten_lists
 
 
 class Metrics(object):
