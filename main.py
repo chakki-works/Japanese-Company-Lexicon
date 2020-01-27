@@ -5,7 +5,6 @@ from pathlib import Path
 
 from utils import ROOT_DIR
 from utils import extend_maps, prepocess_data_for_lstmcrf, build_map, load_data_and_labels
-
 from evaluate import crf_train_eval, bilstm_train_and_eval
 
 def split_data(sents, glod_labels, tag_labels, dev=False, train_ratio=0.7, dev_ratio=0.85):
@@ -43,7 +42,6 @@ def crf_pipeline(data_paths, glod_data_path):
         del crf_pred 
         gc.collect()
     
-
 def bi_lstm_crf_pipeline(data_path, glod_data_path):
     # read glod data
     sents, glod_labels = load_data_and_labels(glod_data_path)
@@ -80,7 +78,6 @@ def bi_lstm_crf_pipeline(data_path, glod_data_path):
     del lstmcrf_pred 
     gc.collect()
 
-
 def main(data_paths, glod_data_path):
     """CRF and Bi-LSTM-CRF pipelines"""
 
@@ -108,6 +105,3 @@ if __name__ == "__main__":
     mainichi_glod = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')     
     main(mainichi_paths, mainichi_glod)
     
-
-
-

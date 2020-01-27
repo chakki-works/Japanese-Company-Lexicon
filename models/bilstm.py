@@ -22,7 +22,7 @@ class BiLSTM(nn.Module):
     def forward(self, sents_tensor, lengths):
         emb = self.embedding(sents_tensor)  # [B, L, emb_size]
 
-        packed = pack_padded_sequence(emb, lengths, batch_first=True)
+        packed = pack_padded_sequence(emb, lengths, batch_first=True, enforce_sorted=False)
         rnn_out, _ = self.bilstm(packed)
         # rnn_out:[B, L, hidden_size*2]
         rnn_out, _ = pad_packed_sequence(rnn_out, batch_first=True)
