@@ -4,22 +4,40 @@ The high coverage lexicon for Japanese company recognition.
 
 ## Download links
 
-We provide two kinds of format. The **CSV** format contains one name per line, and the [Mecab format](https://gist.github.com/Kimtaro/ab137870ad4a385b2d79) contains one record per line:
+We provide two kinds of format. The **CSV** format contains one name per line, and the [MeCab format](https://gist.github.com/Kimtaro/ab137870ad4a385b2d79) contains one record per line:
 
 
-- JCL_slim (7067216, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.csv.zip), [Mecab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.dic.zip)): no furigana, no extra enNames, no ditital names, the name length is longer than 2 and shorter than 30.
-- JCL_medium (7555163, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.csv.zip), [Mecab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.dic.zip)): no ditital names, the name length is longer than 2 and shorter than 30. 
-- JCL_full (8491326, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.csv.zip), [Mecab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.dic.zip)): without any limitation
+- JCL_slim (7067216, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.dic.zip)): no furigana, no extra enNames, no ditital names, the name length is longer than 2 and shorter than 30.
+- JCL_medium (7555163, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.dic.zip)): no ditital names, the name length is longer than 2 and shorter than 30. 
+- JCL_full (8491326, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.dic.zip)): without any limitation
+
+Our goal is to build the enterprise knowledge graph, so we only consider the companies that conducts economic activity for commercial purposes. These companies are denoted as Stock Compay (株式会社), Limited Company (有限会社), and Limitted Liability Company (合同会社). 
 
 
 The full version contains all kinds of names, including digits, one character  aliases, etc. These abnormal names will cause annotation error for NER task. We recommend use the JCL_medium version or JCL_slim version. 
 
-These realease version are updated version of the one that we used in the papaer. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only perserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but perseve `'株式会社KADOKAWA'`. If you deal with text with JCL, we recommend first normalize the text to hankaku format.
+These realease versions are easier to use than the version we used in the papaer. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only perserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but perseve `'株式会社KADOKAWA'`. If you deal with text with JCL, we recommend first normalize the text to hankaku format.
+
 ```python
 import unicodedata
 
 text = unicodedata.normalize('NFKC', text) # convert zenkaku to hankaku
 ```
+
+
+| **Single Lexicon**         | Total Names | Unique Company Names |
+| -------------------------- | ----------- | -------------------- |
+| JCL-slim                   | 7067216     | 7067216              |
+| JCL-medium                 | 7555163     | 7555163              |
+| JCL-full                   | 8491326     | 8491326              |
+| IPAdic                     | 392126      | 16596                |
+| Juman                      | 751185      | 9598                 |
+| NEologd                    | 3171530     | 244213               |
+| **Multiple Lexicon**       |             |                      |
+| IPAdic-NEologd             | 4615340     | 257246               |
+| IPAdic-NEologd-JCL(medium) | 12093988    | 7722861              |
+
+
 
 
 ## JCL Generation Process
@@ -76,7 +94,7 @@ sh scripts/generate_alias.sh
 
 Untill now, the JCL lexicon is prepared. 
 
-If you want to get the Mecab format:
+If you want to get the MeCab format:
 ```
 python tools/save_mecab_format.py
 ```
@@ -138,7 +156,7 @@ The intrinsic evaluation is calculate how many company names in different lexico
 | IPAdic                     | 726      | 0.4595     | 316   | 0.3523     |
 | Juman                      | 197      | 0.1247     | 133   | 0.1483     |
 | NEologd                    | 424      | 0.2684     | 241   | 0.2687     |
-| **Multiple lexicon**       |          |            |       |            |
+| **Multiple Lexicon**       |          |            |       |            |
 | IPAdic-NEologd             | 839      | 0.5310     | 421   | 0.4693     |
 | IPAdic-neologd-JCL(medium) | 1064     | **0.6734** | 568   | **0.6332** |
 
