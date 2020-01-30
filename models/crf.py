@@ -1,6 +1,6 @@
 from sklearn_crfsuite import CRF
 
-from .tools import sent2features
+from .tools import sent2features, sent2features_tagged
 
 
 class CRFModel(object):
@@ -18,11 +18,18 @@ class CRFModel(object):
                          max_iterations=max_iterations,
                          all_possible_transitions=all_possible_transitions)
 
-    def train(self, sentences, tag_lists):
-        features = [sent2features(s) for s in sentences]
+    def train(self, sentences, tag_lists, tagged=False):
+        if tagged:
+            features = [sent2features_tagged(s) for s in sentences] 
+        else:
+            features = [sent2features(s) for s in sentences]
         self.model.fit(features, tag_lists)
 
-    def test(self, sentences):
-        features = [sent2features(s) for s in sentences]
-        pred_tag_lists = self.model.predict(features)
+    def test(self, sentences, tagged=False):
+        if tagged:
+            features = [sent2features_tagged(s) for s in sentences]
+            pred_tag_lists = self.model.predict(features)
+        else:
+            features = [sent2features(s) for s in sentences]
+            pred_tag_lists = self.model.predict(features)
         return pred_tag_lists

@@ -2,10 +2,11 @@ import gc
 import os
 import glob
 from pathlib import Path
+from collections import namedtuple
 
 from models.utils import ROOT_DIR
 from models.utils import extend_maps, prepocess_data_for_lstmcrf, build_map, load_data_and_labels
-from models.evaluate import crf_train_eval, bilstm_train_and_eval
+from models.evaluate import crf_train_eval, crf_train_eval_tagged, bilstm_train_and_eval
 
 
 def split_data(sents, glod_labels, tag_labels, dev=False, train_ratio=0.7, dev_ratio=0.85):
@@ -21,6 +22,11 @@ def split_data(sents, glod_labels, tag_labels, dev=False, train_ratio=0.7, dev_r
         dev_word_lists, dev_tag_lists = sents[train_index:dev_index], glod_labels[train_index:dev_index]
         test_word_lists, test_tag_lists = sents[dev_index:], glod_labels[dev_index:]
         return train_word_lists, train_tag_lists, dev_word_lists, dev_tag_lists, test_word_lists, test_tag_lists
+
+def split_tagged_data(data, train_ratio=0.7):
+    split_index = int(len(data) * train_ratio)
+    train_data, test_data = data[:split_index], data[split_index:]
+    return train_data, test_data
 
 def crf_pipeline(data_paths, glod_data_path):
     # read glod data
@@ -42,7 +48,7 @@ def crf_pipeline(data_paths, glod_data_path):
         print()
         del crf_pred 
         gc.collect()
-    
+
 def bi_lstm_crf_pipeline(data_path, glod_data_path):
     # read glod data
     sents, glod_labels = load_data_and_labels(glod_data_path)
@@ -90,7 +96,27 @@ def main(data_paths, glod_data_path):
         data_path = Path(data_path)
         bi_lstm_crf_pipeline(data_path, glod_data_path)
         
-   
+def crf_tagged_pipeline(data_paths, glod_data_path):
+    # read glod data
+    Sentence = namedtuple('Sentence', 'words tag_labels gold_labels')
+    sents, gold_labels = load_data_and_labels(glod_data_path)
+
+    for data_path in data_paths:
+        # read tagged data
+        tag_sents, tag_labels = load_data_and_labels(data_path)
+        data = [Sentence(*pair) for pair in zip(tag_sents, tag_labels, gold_labels)]
+
+        train_data, test_data = split_tagged_data(data)
+
+        data_path = Path(data_path)
+        print("Training and evaluating CRF model for data tagged with:", data_path.stem)
+        print('trian data: {}, test data: {}'.format(len(train_data), len(test_data)))
+        crf_pred = crf_train_eval_tagged(train_data, test_data)
+        print()
+        print()
+        del crf_pred 
+        gc.collect()
+ 
 if __name__ == "__main__":
     data_dir = os.path.join(ROOT_DIR, 'data/corpora/output/*.bio')
     data_paths = glob.glob(data_dir) 
@@ -106,3 +132,17 @@ if __name__ == "__main__":
     mainichi_glod = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')     
     main(mainichi_paths, mainichi_glod)
     
+    # # use dictionary as feature for CRF
+    # data_dir = os.path.join(ROOT_DIR, 'data/corpora/output/*.bio')
+    # data_paths = glob.glob(data_dir) 
+    # data_paths = sorted(data_paths, key=lambda x: len(x))
+
+    # # bccwj  
+    # bccwj_paths = [x for x in data_paths if 'bccwj' in x]
+    # bccwj_glod = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj.bio') 
+    # crf_tagged_pipeline(bccwj_paths, bccwj_glod)
+
+    # # mainichi
+    # mainichi_paths = [x for x in data_paths if 'mainichi' in x] 
+    # mainichi_glod = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')     
+    # crf_tagged_pipeline(mainichi_paths, mainichi_glod) 

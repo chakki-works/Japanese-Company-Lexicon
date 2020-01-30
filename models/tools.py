@@ -27,6 +27,31 @@ def sent2features(sent):
     """抽取序列特征"""
     return [word2features(sent, i) for i in range(len(sent))]
 
+# 有tagged label和true label两列的情况
+def sent2features_tagged(sent):
+    """抽取单个字的特征"""
+    words_feature = []
+    words = sent.words
+    tagged_labels = sent.tag_labels
+    for i, word in enumerate(words):
+        prev_word = "<s>" if i == 0 else words[i-1]
+        next_word = "</s>" if i == (len(words)-1) else words[i+1]
+        tagged_label = tagged_labels[i]
+        # 使用的特征：
+        # 前一个词，当前词，后一个词，
+        # 前一个词+当前词， 当前词+后一个词
+        features = {
+            'w': word,
+            'w-1': prev_word,
+            'w+1': next_word,
+            'w-1:w': prev_word+word,
+            'w:w+1': word+next_word,
+            'bias': 1,
+            'dic_tag': tagged_label
+        }
+        words_feature.append(features)
+    return words_feature
+
 
 # ******** LSTM模型 工具函数*************
 

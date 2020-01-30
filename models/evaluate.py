@@ -6,6 +6,25 @@ from .bilstm_crf import BILSTM_Model
 from .utils import save_model, flatten_lists
 from .metrics import Metrics
 
+def crf_train_eval_tagged(train_data, test_data, remove_O=False):
+
+    # train CRF
+    train_gold_labels = [sent.gold_labels for sent in train_data]
+    test_tag_lists = [sent.gold_labels for sent in test_data]
+
+    crf_model = CRFModel()
+    crf_model.train(train_data, train_gold_labels, tagged=True)
+    save_model(crf_model, "./ckpts/crf.pkl")
+
+    # evaluate CRF
+    pred_tag_lists = crf_model.test(test_data, tagged=True)
+
+    metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
+    metrics.report_scores()
+    metrics.report_confusion_matrix()
+
+    return pred_tag_lists
+
 
 def crf_train_eval(train_data, test_data, remove_O=False):
 

@@ -1,7 +1,7 @@
 import pickle
 import os
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def merge_maps(dict1, dict2):
     """merge two word2id or two tag2id"""

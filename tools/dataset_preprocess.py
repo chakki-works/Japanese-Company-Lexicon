@@ -26,6 +26,7 @@ The JSONL format looks like:
 import os
 import json
 from tqdm import tqdm
+from unicodedata import normalize
 
 from settings import ROOT_DIR
 
@@ -209,30 +210,73 @@ def save_names(x_corporation, y_corporation, output_file) -> None:
     for tag in list(unique_tags):
       f.write('{}\n'.format(tag))
 
+def filter_bad_words_forward(x_sample, y_sample):
+    bad_word = True
+    while bad_word:
+        # delete empty string in 
+        if len(x_sample[0]) == 0: 
+            x_sample = x_sample[1:]
+            y_sample = y_sample[1:]
+        # delete zenkaku space in the beginning
+        elif x_sample[0] == '\u3000': 
+            x_sample = x_sample[1:]
+            y_sample = y_sample[1:]
+        # delete empty space
+        elif x_sample[0] == ' ':
+            x_sample = x_sample[1:]
+            y_sample = y_sample[1:]
+        else:
+            bad_word = False
+    return x_sample, y_sample
+
+def filter_bad_words(x_sample, y_sample):
+  """Remove bad words in the beginning and end"""
+  # Remove bad words in the beginning
+  x_sample, y_sample = filter_bad_words_forward(x_sample, y_sample)
+  # Remove bad words in the end
+  x_sample, y_sample = x_sample[::-1], y_sample[::-1]
+  x_sample, y_sample = filter_bad_words_forward(x_sample, y_sample)
+  return x_sample[::-1], y_sample[::-1]
+
+
+def zenkaku_normalize(x_sample, y_sample):
+  """Normalize data to hankaku format in case of length change
+
+  x_sample: ['第', '四', '日', 'は', '五', '日', '、', '千', '葉', 'ポ', 'ー', 'ト', 'ア', 'リ', ...]
+  y_sample: ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', ...]
+  """
+  x_sample_norm = []
+  y_sample_norm = []
+
+  for i, x in enumerate(x_sample):
+    x_norm = normalize('NFKC', x)
+    if len(x) == len(x_norm):
+      x_sample_norm.extend(x_norm)
+      y_sample_norm.append(y_sample[i])
+      
+    else:
+      x_sample_norm.extend([x for x in x_norm])
+      y_sample_norm.extend([y_sample[i] for _ in range(len(x_norm))])
+  
+  return x_sample_norm, y_sample_norm
+
+
 def save_bio(x_corporation, y_corporation, output_file) -> None:
   total = 0
   error = 0
-
   with open(output_file, 'w', encoding='utf-8') as f:
-    x_data = []
-    y_data = []
     for x_sample, y_sample in zip(x_corporation, y_corporation):
       total += 1
       try:
-        if len(x_sample[0]) == 0:
-          x_sample = x_sample[1:]
-          y_sample = y_sample[1:]
-        if x_sample[0] == '\u3000':
-          x_sample = x_sample[1:]
-          y_sample = y_sample[1:]
-        x_data.append(x_sample)
-        y_data.append(y_sample)
+        x_sample, y_sample = filter_bad_words(x_sample, y_sample)
+        x_sample, y_sample = zenkaku_normalize(x_sample, y_sample)
         for char, tag in zip(x_sample, y_sample):
           f.write('{}\t{}\n'.format(char, tag))
       except:
         error += 1
         print(x_sample)
         continue
+        
       f.write('\n')
   print('{} / {}'.format(error, total))
   print('Save bio format')
