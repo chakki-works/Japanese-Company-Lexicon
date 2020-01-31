@@ -169,7 +169,7 @@ The extrinsic evaluation is using using the NER taks to measure different lexico
 python main.py
 ```
 
-Following table is the extrinsic evaluation result. The best result is highlighted. 
+Following table is the extrinsic evaluation result. The best results are highlighted. 
 
 
 | Single Lexicon             | Mainichi F1 |             | BCCWJ F1   |             |
@@ -185,6 +185,49 @@ Following table is the extrinsic evaluation result. The best result is highlight
 | **Multiple Lexicon**       |             |             |            |             |
 | IPAdic-NEologd             | **0.8911**  | **0.9074**  | **0.8624** | 0.8360      |
 | IPAdic-NEologd-JCL(medium) | 0.8335      | 0.8752      | 0.8530     | **0.8524**  |
+
+## Extra Experiment
+
+Add dictionary annotation as CRF features. Uncomment below scirpt in the `main.py` and run `python main.py`.
+
+```python
+# # use dictionary as feature for CRF
+# data_dir = os.path.join(ROOT_DIR, 'data/corpora/output/*.bio')
+# data_paths = glob.glob(data_dir) 
+# data_paths = sorted(data_paths, key=lambda x: len(x))
+
+# # bccwj  
+# bccwj_paths = [x for x in data_paths if 'bccwj' in x]
+# bccwj_glod = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj.bio') 
+# crf_tagged_pipeline(bccwj_paths, bccwj_glod)
+
+# # mainichi
+# mainichi_paths = [x for x in data_paths if 'mainichi' in x] 
+# mainichi_glod = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')     
+# crf_tagged_pipeline(mainichi_paths, mainichi_glod) 
+```
+
+The new experiment results are in the parentheses. We use the dictionary annotation as CRF feature, and the best results are highlighted. 
+
+
+
+| Single Lexicon             | Mainichi F1         | BCCWJ F1            |
+| -------------------------- | ------------------- | ------------------- |
+|                            | CRF                 | CRF                 |
+| Gold                       | 0.9756 (1)          | 0.9273 (1)          |
+| JCL-slim                   | 0.8533 (0.9754)     | 0.8506 (0.9339)     |
+| JCL-meidum                 | 0.8517 (0.9752)     | 0.8501 (0.9303)     |
+| JCL-full                   | 0.5264 (**0.9764**) | 0.5646 (**0.9364**) |
+| Juman                      | 0.8865 (0.9754)     | 0.8320 (0.9276)     |
+| IPAdic                     | 0.9048 (0.9758)     | 0.8646 (0.9299)     |
+| NEologd                    | 0.8975 (0.9750)     | 0.8453 (0.9282)     |
+| **Multiple Lexicon**       |                     |                     |
+| IPAdic-NEologd             | 0.8911 (**0.9767**) | 0.8624 (**0.9366**) |
+| IPAdic-NEologd-JCL(medium) | 0.8335 (0.9759)     | 0.8530 (0.9334)     |
+
+
+
+
 
 
 
