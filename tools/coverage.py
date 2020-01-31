@@ -57,7 +57,11 @@ def pipeline(dict_path: str):
   mainichi_path = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_names.csv')
   bccwj_path = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_names.csv')
 
-  for data_path in [bccwj_path]:
+  # uncomment below paths to run the duplicate coverage calculation
+  # mainichi_path = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_names_duplicates.csv')
+  # bccwj_path = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj_names_duplicates.csv')
+
+  for data_path in [mainichi_path, bccwj_path]:
     data_path = Path(data_path)
     data_name = data_path.stem
 

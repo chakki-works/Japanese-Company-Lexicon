@@ -12,6 +12,13 @@ from dataset_preprocess import load_data_and_labels
 
 from settings import ROOT_DIR
 
+def read_csv(path: str) -> set:
+  names = set()
+  with open(path, 'r') as f:
+    for line in f:
+      names.add(line.strip())
+  return names
+
 def read_dictionary(dict_path: str) -> dict:
   with open(dict_path, 'r', encoding='utf-8') as f:
     company_dict = {}
@@ -65,7 +72,7 @@ def filter_chunks(chunks: list) -> list:
               dic[end_idx] = chunk
   return list(dic.values())
 
-def tag_with_dict(company_trie: Automaton, sents: list) -> float:
+def tag_with_dict(company_trie: Automaton, sents: list, duplicate: None) -> float:
   sent_tags = []
   sent_text = []
   for sent in sents:
@@ -85,11 +92,13 @@ def tag_with_dict(company_trie: Automaton, sents: list) -> float:
       # generate labels
       for chunk in chunks:
           start_idx, end_idx = chunk[0], chunk[1]
-          for tag_idx in range(start_idx, end_idx):
-              if tag_idx == start_idx:
-                  tags[tag_idx] = 'B-company'
-              else:
-                  tags[tag_idx] = 'I-company'
+          if duplicate:
+            if chunk[2] in duplicate: # if 'シャンソン化粧品' is in the duplicate names that show more than once in dataset
+              for tag_idx in range(start_idx, end_idx):
+                  if tag_idx == start_idx:
+                      tags[tag_idx] = 'B-company'
+                  else:
+                      tags[tag_idx] = 'I-company'
     sent_tags.append(tags)
     sent_text.append([x for x in text]) 
   return sent_tags, sent_text
@@ -121,14 +130,20 @@ def pipeline(dict_path: str):
   # 2. read two datasets
   mainichi_path = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')
   bccwj_path = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj.bio') 
-  
+
   for data_path in [mainichi_path, bccwj_path]:
     data_path = Path(data_path)
     data_name = data_path.stem
+
+    # 2.5 read duplicated company names list for filtering
+    duplicate_name_path = os.path.join(data_path.parent, data_path.stem + '_names_duplicates.csv')
+    duplicate_names = read_csv(duplicate_name_path)
+
     sents, glod_labels = read_bio(data_path)
 
     # 3. tag two data set with dict for longest match
-    tag_labels, sent_text = tag_with_dict(company_trie, sents)
+    # tag_labels, sent_text = tag_with_dict(company_trie, sents)
+    tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
 
     # 4. Save tagged dataset
     save_file_name = data_path.stem + '_' + dict_path.stem + '_tagged.bio'

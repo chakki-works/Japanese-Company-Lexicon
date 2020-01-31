@@ -27,6 +27,8 @@ import os
 import json
 from tqdm import tqdm
 from unicodedata import normalize
+from pathlib import Path
+from collections import Counter
 
 from settings import ROOT_DIR
 
@@ -193,22 +195,36 @@ def save_jsonl(x_corporation, y_corporation, output_file: str) -> None:
       f.write('\n')
 
 def save_names(x_corporation, y_corporation, output_file) -> None:
+  output_file = Path(output_file)
+  duplicate_output_file = os.path.join(output_file.parent, output_file.stem + '_duplicates' + output_file.suffix)
+
+  all_tags = list()
+  for x_sample, y_sample in zip(x_corporation, y_corporation):
+    tag_list = get_tag_list(x_sample, y_sample)
+    for tag in tag_list:
+      tag_text = ''.join(tag['text']) 
+      if len(tag_text) != 0: # in case that tag is a empty string
+        tag_text = normalize('NFKC', tag_text)
+        all_tags.append(tag_text) 
+      else:
+        print(x_sample)
+        print(y_sample)
+  print('total tags are: {}'.format(len(all_tags)))
+  
+  # output unique names
   with open(output_file, 'w', encoding='utf-8') as f:
-    all_tags = list()
-    for x_sample, y_sample in zip(x_corporation, y_corporation):
-      tag_list = get_tag_list(x_sample, y_sample)
-      for tag in tag_list:
-        tag_text = ''.join(tag['text']) 
-        if len(tag_text) != 0: # in case that tag is a empty string
-          all_tags.append(tag_text) 
-        else:
-          print(x_sample)
-          print(y_sample)
-    print('total tags are: {}'.format(len(all_tags)))
     unique_tags = list(set(all_tags))
     print('Unique tags are: {}'.format(len(unique_tags)))
     for tag in list(unique_tags):
       f.write('{}\n'.format(tag))
+
+  # output unique names except the names that only showed once 
+  with open(duplicate_output_file, 'w', encoding='utf-8') as f:
+    counts = Counter(all_tags)
+    for tag, count in counts.items():
+      if count != 1:
+        f.write('{}\n'.format(tag)) 
+  
 
 def filter_bad_words_forward(x_sample, y_sample):
     bad_word = True

@@ -188,6 +188,8 @@ Following table is the extrinsic evaluation result. The best results are highlig
 
 ## Extra Experiment
 
+### Dictionary annotation as feature
+
 Add dictionary annotation as CRF features. Uncomment below scirpt in the `main.py` and run `python main.py`.
 
 ```python
@@ -207,7 +209,7 @@ Add dictionary annotation as CRF features. Uncomment below scirpt in the `main.p
 # crf_tagged_pipeline(mainichi_paths, mainichi_glod) 
 ```
 
-The new experiment results are in the parentheses. We use the dictionary annotation as CRF feature, and the best results are highlighted. 
+The new experiment results are in the parentheses. We use the dictionary annotation as CRF feature, and the best results are highlighted. The result shows that the dictionary feature boost the performance, especilly the JCL. 
 
 
 
@@ -226,9 +228,72 @@ The new experiment results are in the parentheses. We use the dictionary annotat
 | IPAdic-NEologd-JCL(medium) | 0.8335 (0.9759)     | 0.8530 (0.9334)     |
 
 
+### Remove the company names that only appeard once, increase the coverage
+
+
+Dataset: 
+
+
+| Dataset                                  | Mainichi | BCCWJ |
+| ---------------------------------------- | -------- | ----- |
+| Company Samples/Sentence                 | 3027     | 1364  |
+| Company Entities                         | 4664     | 1704  |
+| Unique Company Entities                  | 1580     | 897   |
+| Company Names that Appeared Only Once    | 934      | 604   |
+| Duplicated Company Names                 | 3730     | 1100  |
+| Company Names that need to be recognized | 646      | 293   |
+
+
+Remove the company names tha appeared only once. The result formant is `result1 (result3)`:
+
+- `result1` : train the data on the labels that tagged by dictionary
+- `result3` : train the data on the labels that tagged by dictionary, remove the company names that only appear once (increase the coverage)
+
+
+| **Single Lexicon**         | Mainichi   |                     | BCCWJ     |                     |
+| -------------------------- | ---------- | ------------------- | --------- | ------------------- |
+|                            | Count      | Coverage            | Count     | Coverage            |
+| Gold                       | 1580 (646) |                     | 897 (293) |                     |
+| JCL-slim                   | 727 (313)  | 0.4601 (0.4845)     | 419 (164) | 0.4671 (0.5597)     |
+| JCL-medium                 | 730 (315)  | 0.4620 (0.4876)     | 422 (165) | 0.4705 (0.5631)     |
+| JCL-full                   | 805 (365)  | **0.5095** (0.5650) | 487 (201) | **0.5429** (0.6860) |
+| IPAdic                     | 726 (414)  | 0.4595 (0.6409)     | 316 (148) | 0.3523 (0.5051)     |
+| Juman                      | 197 (140)  | 0.1247 (0.2167)     | 133 (79)  | 0.1483 (0.2696)     |
+| NEologd                    | 424 (212)  | 0.2684 (0.3282)     | 241 (101) | 0.2687 (0.3447)     |
+| **Multiple Lexicon**       |            |                     |           |                     |
+| IPAdic-NEologd             | 839 (446)  | 0.5310 (0.6904)     | 421 (180) | 0.4693 (0.6143)     |
+| IPAdic-neologd-JCL(medium) | 1064 (497) | **0.6734** (0.7693) | 568 (220) | **0.6332** (0.7782) |
+
+
+The NER task result.
 
 
 
+- `result1` : train the data on the labels that tagged by dictionary
+- `result2` : add the dictionary tag as feature for CRF, use the true label for training
+- `result3` : train the data on the labels that tagged by dictionary, remove the company names that only appear once (increase the coverage)
+- `result4` : remove the company names that only appear once, but add the dictionary tag as feature for CRF, use the true label for training (increase the coverage)
+
+
+
+
+| Single Lexicon             | Mainichi F1 (CRF) | Mainichi F1 (CRF) | Mainichi F1 (CRF) | Mainichi F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) |
+| -------------------------- | ----------------- | ----------------- | ----------------- | ----------------- | -------------- | -------------- | -------------- | -------------- |
+|                            | Result1           | Result2           | Result3           | Result4           | Result1        | Result2        | Result3        | Result4        |
+| Gold                       | 0.9756            | 1                 | 0.9749            | 1                 | 0.9273         | 1              | 0.9260         | 1              |
+| JCL-slim                   | 0.8533            | 0.9754            | 0.9310            | 0.9769            | 0.8506         | 0.9339         | 0.8575         | 0.9412         |
+| JCL-meidum                 | 0.8517            | 0.9752            | 0.9325            | **0.9771**        | 0.8501         | 0.9303         | 0.8562         | 0.9412         |
+| JCL-full                   | 0.5264            | **0.9764**        | **0.9470**        | 0.9770            | 0.5646         | **0.9364**     | **0.8833**     | **0.9458**     |
+| Juman                      | 0.8865            | 0.9754            | 0.9282            | 0.9758            | 0.8320         | 0.9276         | 0.8444         | 0.9301         |
+| IPAdic                     | **0.9048**        | 0.9758            | 0.9418            | 0.9757            | **0.8646**     | 0.9299         | 0.8555         | 0.9281         |
+| NEologd                    | 0.8975            | 0.9750            | 0.9237            | 0.9744            | 0.8453         | 0.9282         | 0.8429         | 0.9296         |
+| **Multiple Lexicon**       |                   |                   |                   |                   |                |                |                |                |
+| IPAdic-NEologd             | **0.8911**        | **0.9767**        | 0.9449            | 0.9760            | **0.8624**     | **0.9366**     | 0.8589         | 0.9367         |
+| IPAdic-NEologd-JCL(medium) | 0.8335            | 0.9759            | **0.9532**        | **0.9777**        | 0.8530         | 0.9334         | **0.8724**     | **0.9425**     |
+
+
+
+After removing the company names, the coverage increases, and the f1 is also increased (`result1->result3`). Another finding is that after we add dictionary features (`result4`), the reuslt is pretty colose to the `result2`, which means that even if we delete the company names that only appear once, we can still get a good performance if we add the dictionary features.
 
 
 ## Citation
