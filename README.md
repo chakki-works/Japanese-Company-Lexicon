@@ -230,6 +230,12 @@ The new experiment results are in the parentheses. We use the dictionary annotat
 
 ### Remove the company names that only appeard once, increase the coverage
 
+Uncomment below code in `annotation_with_dict.py`, and run `python tools/annotation_with_dict.py`.
+
+```python
+# tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
+```
+
 
 Dataset: 
 
@@ -275,6 +281,54 @@ The NER task result.
 - `result4` : remove the company names that only appear once, but add the dictionary tag as feature for CRF, use the true label for training (increase the coverage)
 
 
+```python
+### result 1 ###
+# python tools/annotation_with_dict.py
+tag_labels, sent_text = tag_with_dict(company_trie, sents)
+# tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
+
+# python main.py
+if __name__ == "__main__":
+    entity_level = False
+    # bccwj  
+    main(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi
+    main(mainichi_paths, mainichi_glod, entity_level=entity_level)
+
+
+### result 2 ###
+# python main.py
+if __name__ == "__main__":
+    entity_level = False
+    # bccwj: use dictionary as feature for CRF
+    crf_tagged_pipeline(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi: use dictionary as feature for CRF       
+    crf_tagged_pipeline(mainichi_paths, mainichi_glod, entity_level=entity_level) 
+
+
+### result 3 ###
+# python tools/annotation_with_dict.py
+# tag_labels, sent_text = tag_with_dict(company_trie, sents)
+tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
+
+# python main.py
+if __name__ == "__main__":
+    entity_level = False
+    # bccwj  
+    main(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi
+    main(mainichi_paths, mainichi_glod, entity_level=entity_level)
+
+
+### result 4 ###
+# python main.py
+if __name__ == "__main__":
+    entity_level = False
+    # bccwj: use dictionary as feature for CRF
+    crf_tagged_pipeline(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi: use dictionary as feature for CRF       
+    crf_tagged_pipeline(mainichi_paths, mainichi_glod, entity_level=entity_level) 
+```
 
 
 | Single Lexicon             | Mainichi F1 (CRF) | Mainichi F1 (CRF) | Mainichi F1 (CRF) | Mainichi F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) |
@@ -295,6 +349,82 @@ The NER task result.
 
 After removing the company names, the coverage increases, and the f1 is also increased (`result1->result3`). Another finding is that after we add dictionary features (`result4`), the reuslt is pretty colose to the `result2`, which means that even if we delete the company names that only appear once, we can still get a good performance if we add the dictionary features.
 
+
+## Extrinsic Evaluation: NER task on entity level
+
+The above result are the performance based on token level. Below is the performance based on entity level.
+
+```python
+### result 1 ###
+# python tools/annotation_with_dict.py
+tag_labels, sent_text = tag_with_dict(company_trie, sents)
+# tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
+
+# python main.py
+if __name__ == "__main__":
+    entity_level = True
+    # bccwj  
+    main(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi
+    main(mainichi_paths, mainichi_glod, entity_level=entity_level)
+
+
+### result 2 ###
+# python main.py
+if __name__ == "__main__":
+    entity_level = True
+    # bccwj: use dictionary as feature for CRF
+    crf_tagged_pipeline(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi: use dictionary as feature for CRF       
+    crf_tagged_pipeline(mainichi_paths, mainichi_glod, entity_level=entity_level) 
+
+
+### result 3 ###
+# python tools/annotation_with_dict.py
+# tag_labels, sent_text = tag_with_dict(company_trie, sents)
+tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
+
+# python main.py
+if __name__ == "__main__":
+    entity_level = True
+    # bccwj  
+    main(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi
+    main(mainichi_paths, mainichi_glod, entity_level=entity_level)
+
+
+### result 4 ###
+# python main.py
+if __name__ == "__main__":
+    entity_level = True
+    # bccwj: use dictionary as feature for CRF
+    crf_tagged_pipeline(bccwj_paths, bccwj_glod, entity_level=entity_level)
+    # mainichi: use dictionary as feature for CRF       
+    crf_tagged_pipeline(mainichi_paths, mainichi_glod, entity_level=entity_level) 
+```
+
+- `result1` : train the data on the labels that tagged by dictionary
+- `result2` : add the dictionary tag as feature for CRF, use the true label for training
+- `result3` : train the data on the labels that tagged by dictionary, remove the company names that only appear once (increase the coverage)
+- `result4` : remove the company names that only appear once, but add the dictionary tag as feature for CRF, use the true label for training (increase the coverage)
+
+
+| Single Lexicon             | Mainichi F1 (CRF) | Mainichi F1 (CRF) | Mainichi F1 (CRF) | Mainichi F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) | BCCWJ F1 (CRF) |
+| -------------------------- | ----------------- | ----------------- | ----------------- | ----------------- | -------------- | -------------- | -------------- | -------------- |
+|                            | Result1           | Result2           | Result3           | Result4           | Result1        | Result2        | Result3        | Result4        |
+| Gold                       | 0.7826            |                   |                   |                   | 0.5537         |                |                |                |
+| JCL-slim                   | 0.1326            | 0.7969            | 0.3027            | 0.8064            | 0.1632         | 0.5892         | 0.1423         | 0.6402         |
+| JCL-meidum                 | 0.1363            | 0.7927            | 0.3183            | 0.8069            | **0.1672**     | 0.5813         | 0.1390         | 0.6428         |
+| JCL-full                   | 0.0268            | **0.8039**        | **0.4644**        | **0.8128**        | 0.0446         | **0.6205**     | **0.3150**     | **0.7211**     |
+| Juman                      | 0.0742            | 0.7923            | 0.2803            | 0.7895            | 0.0329         | 0.5661         | 0.0721         | 0.5752         |
+| IPAdic                     | **0.3099**        | 0.7924            | 0.4444            | 0.7962            | 0.1605         | 0.5961         | 0.1644         | 0.5791         |
+| NEologd                    | 0.1107            | 0.7897            | 0.2384            | 0.7831            | 0.0814         | 0.5718         | 0.0688         | 0.5822         |
+| **Multiple Lexicon**       |                   |                   |                   |                   |                |                |                |                |
+| IPAdic-NEologd             | **0.2456**        | 0.7986            | 0.4805            | 0.8003            | 0.1412         | 0.6187         | 0.1780         | 0.6281         |
+| IPAdic-NEologd-JCL(medium) | 0.1967            | **0.8009**        | 0.5594            | **0.8127**        | **0.2166**     | 0.6132         | 0.2676         | **0.6650**     |
+
+
+From `result1` and `result3`, we can see these dictionary are not suitable for annotating training label, but the dictionary feature do improve the performance in `result2` and `result4`. And after we remove the rare company name, and improve the coerage, the F1 score is improved a lot (`result2` -> `result4`).
 
 ## Citation
 
