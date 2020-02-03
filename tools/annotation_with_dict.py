@@ -72,7 +72,7 @@ def filter_chunks(chunks: list) -> list:
               dic[end_idx] = chunk
   return list(dic.values())
 
-def tag_with_dict(company_trie: Automaton, sents: list, duplicate: None) -> float:
+def tag_with_dict(company_trie: Automaton, sents: list, duplicate=None) -> float:
   sent_tags = []
   sent_text = []
   for sent in sents:
@@ -99,6 +99,12 @@ def tag_with_dict(company_trie: Automaton, sents: list, duplicate: None) -> floa
                       tags[tag_idx] = 'B-company'
                   else:
                       tags[tag_idx] = 'I-company'
+          else:
+            for tag_idx in range(start_idx, end_idx):
+              if tag_idx == start_idx:
+                tags[tag_idx] = 'B-company'
+              else:
+                tags[tag_idx] = 'I-company' 
     sent_tags.append(tags)
     sent_text.append([x for x in text]) 
   return sent_tags, sent_text
@@ -142,8 +148,8 @@ def pipeline(dict_path: str):
     sents, glod_labels = read_bio(data_path)
 
     # 3. tag two data set with dict for longest match
-    # tag_labels, sent_text = tag_with_dict(company_trie, sents)
-    tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
+    tag_labels, sent_text = tag_with_dict(company_trie, sents)
+    # tag_labels, sent_text = tag_with_dict(company_trie, sents, duplicate=duplicate_names)
 
     # 4. Save tagged dataset
     save_file_name = data_path.stem + '_' + dict_path.stem + '_tagged.bio'

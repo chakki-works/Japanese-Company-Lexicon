@@ -28,7 +28,7 @@ def split_tagged_data(data, train_ratio=0.7):
     train_data, test_data = data[:split_index], data[split_index:]
     return train_data, test_data
 
-def crf_pipeline(data_paths, glod_data_path):
+def crf_pipeline(data_paths, glod_data_path, entity_level):
     # read glod data
     sents, glod_labels = load_data_and_labels(glod_data_path)
 
@@ -42,14 +42,15 @@ def crf_pipeline(data_paths, glod_data_path):
         print('trian data: {}, test data: {}'.format(len(train_tag_lists), len(test_tag_lists)))
         crf_pred = crf_train_eval(
             (train_word_lists, train_tag_lists),
-            (test_word_lists, test_tag_lists)
+            (test_word_lists, test_tag_lists),
+            entity_level
         )
         print()
         print()
         del crf_pred 
         gc.collect()
 
-def bi_lstm_crf_pipeline(data_path, glod_data_path):
+def bi_lstm_crf_pipeline(data_path, glod_data_path, entity_level):
     # read glod data
     sents, glod_labels = load_data_and_labels(glod_data_path)
 
@@ -80,23 +81,23 @@ def bi_lstm_crf_pipeline(data_path, glod_data_path):
         (train_word_lists, train_tag_lists),
         (dev_word_lists, dev_tag_lists),
         (test_word_lists, test_tag_lists),
-        crf_word2id, crf_tag2id
+        crf_word2id, crf_tag2id, entity_level=entity_level
     )
     del lstmcrf_pred 
     gc.collect()
 
-def main(data_paths, glod_data_path):
+def main(data_paths, glod_data_path, entity_level):
     """CRF and Bi-LSTM-CRF pipelines"""
 
     # CRF pipeline
-    crf_pipeline(data_paths, glod_data_path)
+    # crf_pipeline(data_paths, glod_data_path, entity_level)
 
     # Bi-LSTM-CRF Pipeline
     for data_path in data_paths:
         data_path = Path(data_path)
-        bi_lstm_crf_pipeline(data_path, glod_data_path)
+        bi_lstm_crf_pipeline(data_path, glod_data_path, entity_level)
         
-def crf_tagged_pipeline(data_paths, glod_data_path):
+def crf_tagged_pipeline(data_paths, glod_data_path, entity_level):
     # read glod data
     Sentence = namedtuple('Sentence', 'words tag_labels gold_labels')
     sents, gold_labels = load_data_and_labels(glod_data_path)
@@ -111,38 +112,33 @@ def crf_tagged_pipeline(data_paths, glod_data_path):
         data_path = Path(data_path)
         print("Training and evaluating CRF model for data tagged with:", data_path.stem)
         print('trian data: {}, test data: {}'.format(len(train_data), len(test_data)))
-        crf_pred = crf_train_eval_tagged(train_data, test_data)
+        crf_pred = crf_train_eval_tagged(train_data, test_data, entity_level)
         print()
         print()
         del crf_pred 
         gc.collect()
  
 if __name__ == "__main__":
+    entity_level = True
     data_dir = os.path.join(ROOT_DIR, 'data/corpora/output/*.bio')
     data_paths = glob.glob(data_dir) 
     data_paths = sorted(data_paths, key=lambda x: len(x))
-
-    # bccwj  
+    
+    # path
     bccwj_paths = [x for x in data_paths if 'bccwj' in x]
     bccwj_glod = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj.bio') 
-    main(bccwj_paths, bccwj_glod)
+    mainichi_paths = [x for x in data_paths if 'mainichi' in x] 
+    mainichi_glod = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')  
+
+
+    # bccwj  
+    main(bccwj_paths, bccwj_glod, entity_level=entity_level)
 
     # mainichi
-    mainichi_paths = [x for x in data_paths if 'mainichi' in x] 
-    mainichi_glod = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')     
-    main(mainichi_paths, mainichi_glod)
+    main(mainichi_paths, mainichi_glod, entity_level=entity_level)
     
-    # # use dictionary as feature for CRF
-    # data_dir = os.path.join(ROOT_DIR, 'data/corpora/output/*.bio')
-    # data_paths = glob.glob(data_dir) 
-    # data_paths = sorted(data_paths, key=lambda x: len(x))
+    # # bccwj: use dictionary as feature for CRF
+    # crf_tagged_pipeline(bccwj_paths, bccwj_glod, entity_level=entity_level)
 
-    # # bccwj  
-    # bccwj_paths = [x for x in data_paths if 'bccwj' in x]
-    # bccwj_glod = os.path.join(ROOT_DIR, 'data/corpora/output/bccwj.bio') 
-    # crf_tagged_pipeline(bccwj_paths, bccwj_glod)
-
-    # # mainichi
-    # mainichi_paths = [x for x in data_paths if 'mainichi' in x] 
-    # mainichi_glod = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi.bio')     
-    # crf_tagged_pipeline(mainichi_paths, mainichi_glod) 
+    # # mainichi: use dictionary as feature for CRF       
+    # crf_tagged_pipeline(mainichi_paths, mainichi_glod, entity_level=entity_level) 

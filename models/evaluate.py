@@ -5,8 +5,10 @@ from .crf import CRFModel
 from .bilstm_crf import BILSTM_Model
 from .utils import save_model, flatten_lists
 from .metrics import Metrics
+from seqeval.metrics import classification_report
 
-def crf_train_eval_tagged(train_data, test_data, remove_O=False):
+
+def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=False):
 
     # train CRF
     train_gold_labels = [sent.gold_labels for sent in train_data]
@@ -19,14 +21,18 @@ def crf_train_eval_tagged(train_data, test_data, remove_O=False):
     # evaluate CRF
     pred_tag_lists = crf_model.test(test_data, tagged=True)
 
-    metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
-    metrics.report_scores()
-    metrics.report_confusion_matrix()
+    if entity_level:
+        print(classification_report(test_tag_lists, pred_tag_lists, digits=4))
+    else:
+        metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
+        metrics.report_scores()
+        metrics.report_confusion_matrix()
+    
 
     return pred_tag_lists
 
 
-def crf_train_eval(train_data, test_data, remove_O=False):
+def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False):
 
     # train CRF
     train_word_lists, train_tag_lists = train_data
@@ -39,15 +45,18 @@ def crf_train_eval(train_data, test_data, remove_O=False):
     # evaluate CRF
     pred_tag_lists = crf_model.test(test_word_lists)
 
-    metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
-    metrics.report_scores()
-    metrics.report_confusion_matrix()
+    if entity_level:
+        print(classification_report(test_tag_lists, pred_tag_lists, digits=4))
+    else:
+        metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
+        metrics.report_scores()
+        metrics.report_confusion_matrix()
 
     return pred_tag_lists
 
 
 def bilstm_train_and_eval(train_data, dev_data, test_data,
-                          word2id, tag2id, crf=True, remove_O=False):
+                          word2id, tag2id, crf=True, remove_O=False, entity_level=False):
     train_word_lists, train_tag_lists = train_data
     dev_word_lists, dev_tag_lists = dev_data
     test_word_lists, test_tag_lists = test_data
@@ -67,9 +76,12 @@ def bilstm_train_and_eval(train_data, dev_data, test_data,
     pred_tag_lists, test_tag_lists = bilstm_model.test(
         test_word_lists, test_tag_lists, word2id, tag2id)
 
-    metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
-    metrics.report_scores()
-    metrics.report_confusion_matrix()
+    if entity_level:
+        print(classification_report(test_tag_lists, pred_tag_lists, digits=4))
+    else:
+        metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
+        metrics.report_scores()
+        metrics.report_confusion_matrix()
 
     return pred_tag_lists
 
