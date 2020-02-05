@@ -3,16 +3,17 @@ from collections import Counter
 
 from .crf import CRFModel
 from .bilstm_crf import BILSTM_Model
-from .utils import save_model, flatten_lists
+from .utils import save_model, flatten_lists, get_sent_tags, low_frequency_accuracy
 from .metrics import Metrics
 from seqeval.metrics import classification_report
 
 
-def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=False):
+def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=False, counter=None):
 
     # train CRF
     train_gold_labels = [sent.gold_labels for sent in train_data]
     test_tag_lists = [sent.gold_labels for sent in test_data]
+    test_word_lists = [sent.words for sent in test_data] 
 
     crf_model = CRFModel()
     crf_model.train(train_data, train_gold_labels, tagged=True)
@@ -21,18 +22,22 @@ def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=Fa
     # evaluate CRF
     pred_tag_lists = crf_model.test(test_data, tagged=True)
 
-    if entity_level:
+    if entity_level and not counter:
         print(classification_report(test_tag_lists, pred_tag_lists, digits=4))
+    elif entity_level and counter:
+        sent_test_tags = get_sent_tags(test_word_lists, test_tag_lists)
+        sent_pred_tags = get_sent_tags(test_word_lists, pred_tag_lists)
+        accuracy = low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter)
+        print('Accuracy:', accuracy)
     else:
         metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
         metrics.report_scores()
         metrics.report_confusion_matrix()
     
-
     return pred_tag_lists
 
 
-def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False):
+def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False, counter=None):
 
     # train CRF
     train_word_lists, train_tag_lists = train_data
@@ -44,9 +49,15 @@ def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False):
 
     # evaluate CRF
     pred_tag_lists = crf_model.test(test_word_lists)
+    
 
-    if entity_level:
+    if entity_level and not counter:
         print(classification_report(test_tag_lists, pred_tag_lists, digits=4))
+    elif entity_level and counter:
+        sent_test_tags = get_sent_tags(test_word_lists, test_tag_lists)
+        sent_pred_tags = get_sent_tags(test_word_lists, pred_tag_lists)
+        accuracy = low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter)
+        print('Accuracy:', accuracy)
     else:
         metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
         metrics.report_scores()

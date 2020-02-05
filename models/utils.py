@@ -3,6 +3,83 @@ import os
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+def low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter):
+    """
+    sent_test_tags: # [[{'start_idx': 7, 'end_idx': 12, 'text': '東芝キヤリア'}, {'start_idx': 14, 'end_idx': 19, 'text': 'ダイキン工業'}], 
+                    [{'start_idx': 0, 'end_idx': 1, 'text': '東芝'}, {'start_idx': 27, 'end_idx': 32, 'text': 'ダイキン工業'}]]
+                    
+    sent_pred_tags: [[{'start_idx': 14, 'end_idx': 19, 'text': 'ダイキン工業'}], 
+                    [{'start_idx': 0, 'end_idx': 1, 'text': '東芝'}, {'start_idx': 27, 'end_idx': 32, 'text': 'ダイキン工業'}]]
+    counter = {'1': ['東芝キヤリア', ''東芝''], '2': ['ダイキン工業']}
+
+    total is calculated by sent_test_tags and counter, total = {'once': 100, 'twice': 70, 'more': 50}
+    correct is calculated by sent_pred_tags, correct = {'once': 1, 'twice': 2, 'more': 0}, which means '東芝' (once) is corrected, 
+                                                                                                    'ダイキン工業' (twice) is corrected.
+                                                                                                    '東芝キヤリア' (once) is not predicted.
+
+    accuracy = {'once': 1/100, 'twice': 2/70, 'more': 0/50} 
+    """
+  correct = {'once': 0, 'twice': 0, 'more': 0}
+  total = {'once': 0, 'twice': 0, 'more': 0}
+  accuracy = {'once': 0, 'twice': 0, 'more': 0}
+
+  # get total
+  for test_tags in sent_test_tags:
+    for test_tag in test_tags:
+        if test_tag['text'] in counter['1']:
+            total['once'] += 1
+        elif test_tag['text'] in counter['2']:
+            total['twice'] += 1
+        else:
+            total['more'] += 1
+
+  # get correct pred
+  for test_tags, pred_tags in zip(sent_test_tags, sent_pred_tags):
+    for pred_tag in pred_tags:
+        for test_tag in test_tags:
+            if pred_tag['start_idx'] == test_tag['start_idx'] and pred_tag['end_idx'] == test_tag['end_idx'] and pred_tag['text'] == test_tag['text']:
+                if pred_tag['text'] in counter['1']:
+                    correct['once'] += 1
+                elif pred_tag['text'] in counter['2']:
+                    correct['twice'] += 1
+                else:
+                    correct['more'] += 1
+
+  accuracy = [correct[key] / total[key] for key in total.keys()]
+  result = "once accuracy: {:.4f}, twice accuracy: {:.4f}, more times: {:.4f}".format(accuracy[0], accuracy[1], accuracy[2])
+  return result
+
+
+def get_tag_list(x_sample, y_sample):
+    tag_list = []
+    tag_text = []
+    one_tag = {'start_idx': 0, 'end_idx': 0, 'text': None}
+    new_tag_flag = False
+    for i, tag in enumerate(y_sample):
+        if tag == 'B-company':
+            one_tag['start_idx'], one_tag['end_idx'] = i, i
+            new_tag_flag = True
+        elif tag == 'I-company' and new_tag_flag:
+            one_tag['end_idx'] = i
+        if (tag == 'O' or i == len(y_sample)-1) and new_tag_flag is True:
+            tag_list.append(one_tag)
+            new_tag_flag = False
+            one_tag['text'] = ''.join(x_sample[one_tag['start_idx'] : one_tag['end_idx']+1])
+            one_tag = {'start_idx': 0, 'end_idx': 0, 'text': None}
+    for tag in tag_list:
+        tag_text.append(tag['text'])
+    return tag_list
+
+
+def get_sent_tags(sent_words, sent_tags):
+    result = []
+    for (words, tags) in zip(sent_words, sent_tags):
+        tag_list = get_tag_list(words, tags)
+        result.append(tag_list)
+    return result
+
+
 def merge_maps(dict1, dict2):
     """merge two word2id or two tag2id"""
     for key in dict2.keys():

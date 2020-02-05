@@ -28,7 +28,7 @@ import json
 from tqdm import tqdm
 from unicodedata import normalize
 from pathlib import Path
-from collections import Counter
+import collections
 
 from settings import ROOT_DIR
 
@@ -194,9 +194,15 @@ def save_jsonl(x_corporation, y_corporation, output_file: str) -> None:
       json.dump(entry, f, ensure_ascii=False)
       f.write('\n')
 
+def count_names(counter):
+  fre = collections.defaultdict(list)
+  for name, count in counter.items():
+    fre[count].append(name)
+  return dict(fre)
+
 def save_names(x_corporation, y_corporation, output_file) -> None:
   output_file = Path(output_file)
-  duplicate_output_file = os.path.join(output_file.parent, output_file.stem + '_duplicates' + output_file.suffix)
+  counter_output_file = os.path.join(output_file.parent, output_file.stem + '_counter.json')
 
   all_tags = list()
   for x_sample, y_sample in zip(x_corporation, y_corporation):
@@ -218,13 +224,12 @@ def save_names(x_corporation, y_corporation, output_file) -> None:
     for tag in list(unique_tags):
       f.write('{}\n'.format(tag))
 
-  # output unique names except the names that only showed once 
-  with open(duplicate_output_file, 'w', encoding='utf-8') as f:
-    counts = Counter(all_tags)
-    for tag, count in counts.items():
-      if count != 1:
-        f.write('{}\n'.format(tag)) 
-  
+  # output name counter to evaluate the dict feature performance on low frequency names
+  with open(counter_output_file, 'w', encoding='utf-8') as f:
+    counter = collections.Counter(all_tags) # [('ＮＷ', 40), ('シスコ', 30),...]
+    counter = count_names(counter) # {1: ['吉野家', 'キヤノン', 'トヨタ自動車'], 3: ['経産新聞'], 4: ['ＮＷ']}
+    json.dump(counter, f, indent=2, ensure_ascii=False)
+
 
 def filter_bad_words_forward(x_sample, y_sample):
     bad_word = True
