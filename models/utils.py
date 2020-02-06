@@ -20,35 +20,35 @@ def low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter):
 
     accuracy = {'once': 1/100, 'twice': 2/70, 'more': 0/50} 
     """
-  correct = {'once': 0, 'twice': 0, 'more': 0}
-  total = {'once': 0, 'twice': 0, 'more': 0}
-  accuracy = {'once': 0, 'twice': 0, 'more': 0}
+    correct = {'once': 0, 'twice': 0, 'more': 0}
+    total = {'once': 0, 'twice': 0, 'more': 0}
+    accuracy = {'once': 0, 'twice': 0, 'more': 0}
 
-  # get total
-  for test_tags in sent_test_tags:
-    for test_tag in test_tags:
-        if test_tag['text'] in counter['1']:
-            total['once'] += 1
-        elif test_tag['text'] in counter['2']:
-            total['twice'] += 1
-        else:
-            total['more'] += 1
-
-  # get correct pred
-  for test_tags, pred_tags in zip(sent_test_tags, sent_pred_tags):
-    for pred_tag in pred_tags:
+    # get total
+    for test_tags in sent_test_tags:
         for test_tag in test_tags:
-            if pred_tag['start_idx'] == test_tag['start_idx'] and pred_tag['end_idx'] == test_tag['end_idx'] and pred_tag['text'] == test_tag['text']:
-                if pred_tag['text'] in counter['1']:
-                    correct['once'] += 1
-                elif pred_tag['text'] in counter['2']:
-                    correct['twice'] += 1
-                else:
-                    correct['more'] += 1
+            if test_tag['text'] in counter['1']:
+                total['once'] += 1
+            elif test_tag['text'] in counter['2']:
+                total['twice'] += 1
+            else:
+                total['more'] += 1
 
-  accuracy = [correct[key] / total[key] for key in total.keys()]
-  result = "once accuracy: {:.4f}, twice accuracy: {:.4f}, more times: {:.4f}".format(accuracy[0], accuracy[1], accuracy[2])
-  return result
+    # get correct pred
+    for test_tags, pred_tags in zip(sent_test_tags, sent_pred_tags):
+        for pred_tag in pred_tags:
+            for test_tag in test_tags:
+                if pred_tag['start_idx'] == test_tag['start_idx'] and pred_tag['end_idx'] == test_tag['end_idx'] and pred_tag['text'] == test_tag['text']:
+                    if pred_tag['text'] in counter['1']:
+                        correct['once'] += 1
+                    elif pred_tag['text'] in counter['2']:
+                        correct['twice'] += 1
+                    else:
+                        correct['more'] += 1
+
+    accuracy = [correct[key] / total[key] for key in total.keys()]
+    result = "once accuracy: {:.4f}, twice accuracy: {:.4f}, more times: {:.4f}".format(accuracy[0], accuracy[1], accuracy[2])
+    return result
 
 
 def get_tag_list(x_sample, y_sample):

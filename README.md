@@ -333,23 +333,24 @@ For BCCWJ dataset, after adding dictionary features, JCL-full boosts the accurac
 
 
 
-| Single Lexicon             | Mainichi<br />Accuracy (CRF) |         |         |         |         |            |
-| -------------------------- | ---------------------------- | ------- | ------- | ------- | ------- | ---------- |
-|                            | Result3                      | Result4 | Result3 | Result4 | Result3 | Result4    |
-|                            | Once                         | Once    | Twice   | Twice   | More    | More       |
-| Gold                       | 0.8547                       |         | 0.8614  |         | 0.6739  |            |
-| JCL-slim                   | 0.2849                       | 0.3633  | 0.2970  | 0.5741  | 0.2408  | 0.8641     |
-| JCL-meidum                 | 0.2961                       | 0.3529  | 0.3069  | 0.5494  | 0.2543  | 0.8631     |
-| JCL-full                   | 0.4246                       | 0.3910  | 0.4257  | 0.6049  | 0.2417  | **0.8705** |
-| Juman                      | 0.3017                       | 0.3633  | 0.4158  | 0.5247  | 0.1024  | 0.8694     |
-| IPAdic                     | 0.5363                       | 0.3945  | 0.5545  | 0.5864  | 0.2588  | 0.8641     |
-| NEologd                    | 0.0559                       | 0.3910  | 0.2475  | 0.5617  | 0.1168  | 0.8556     |
-| **Multiple Lexicon**       |                              |         |         |         |         |            |
-| IPAdic-NEologd             | 0.5810                       | 0.4048  | 0.6337  | 0.6049  | 0.3252  | 0.8662     |
-| IPAdic-NEologd-JCL(medium) | 0.6592                       | 0.3944  | 0.7129  | 0.5741  | 0.4789  | 0.8652     |
+
+| Single Lexicon             | Mainichi<br />Accuracy (CRF) |            |         |            |         |            |
+| -------------------------- | ---------------------------- | ---------- | ------- | ---------- | ------- | ---------- |
+|                            | Result3                      | Result4    | Result3 | Result4    | Result3 | Result4    |
+|                            | Once                         | Once       | Twice   | Twice      | More    | More       |
+| Gold                       | 0.3495                       |            | 0.5370  |            | 0.8514  |            |
+| JCL-slim                   | 0.1972                       | 0.3633     | 0.2037  | 0.5741     | 0.2749  | 0.8641     |
+| JCL-meidum                 | 0.2111                       | 0.3529     | 0.2407  | 0.5494     | 0.2834  | 0.8631     |
+| JCL-full                   | 0.1869                       | 0.3910     | 0.2284  | **0.6049** | 0.3153  | **0.8705** |
+| Juman                      | 0.0104                       | 0.3633     | 0.0123  | 0.5247     | 0.2176  | 0.8694     |
+| IPAdic                     | 0.1073                       | **0.3945** | 0.1790  | 0.5864     | 0.4034  | 0.8641     |
+| NEologd                    | 0.0484                       | 0.3910     | 0.0556  | 0.5617     | 0.1507  | 0.8556     |
+| **Multiple Lexicon**       |                              |            |         |            |         |            |
+| IPAdic-NEologd             | 0.1765                       | **0.4048** | 0.2469  | **0.6049** | 0.4660  | **0.8662** |
+| IPAdic-NEologd-JCL(medium) | 0.3668                       | 0.3944     | 0.4321  | 0.5741     | 0.5807  | 0.8652     |
 
 
-For Mainichi dataset, dictionary features don't boost the performance for `Once` and `Twice` companies, but only boost the performance for the `More` company.
+For Mainichi dataset, the result is basicly same with BCCWJ dataset. Dictionary features boost the performance a lot, especially for the `Once` and `Twice` companies. 
 
 
 ## Citation
