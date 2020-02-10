@@ -125,6 +125,7 @@ def crf_tagged_pipeline(data_paths, gold_data_path, entity_level=False, low_freq
         print()
         del crf_pred 
         gc.collect()
+
  
 if __name__ == "__main__":
     entity_level = True 
@@ -142,11 +143,11 @@ if __name__ == "__main__":
     mainichi_counter = os.path.join(ROOT_DIR, 'data/corpora/output/mainichi_names_counter.json')  
 
     ### result 1 ###
-    # bccwj  
-    main(bccwj_paths, bccwj_gold, entity_level=entity_level)
+    # # bccwj  
+    # main(bccwj_paths, bccwj_gold, entity_level=entity_level)
 
-    # mainichi
-    main(mainichi_paths, mainichi_gold, entity_level=entity_level)
+    # # mainichi
+    # main(mainichi_paths, mainichi_gold, entity_level=entity_level)
     
     ### result 2 ###
     # # bccwj: use dictionary as feature for CRF
@@ -167,4 +168,4 @@ if __name__ == "__main__":
     # crf_tagged_pipeline(bccwj_paths, bccwj_gold, entity_level=entity_level, low_frequency=bccwj_counter)
 
     # mainichi: evaluate on low frequency compnay names, use dictionary as feature for CRF
-    # crf_tagged_pipeline(mainichi_paths, mainichi_gold, entity_level=entity_level, low_frequency=mainichi_counter) 
+    crf_tagged_pipeline(mainichi_paths, mainichi_gold, entity_level=entity_level, low_frequency=mainichi_counter) 

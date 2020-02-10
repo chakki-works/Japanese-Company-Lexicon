@@ -3,7 +3,7 @@ from collections import Counter
 
 from .crf import CRFModel
 from .bilstm_crf import BILSTM_Model
-from .utils import save_model, flatten_lists, get_sent_tags, low_frequency_accuracy
+from .utils import save_model, flatten_lists, get_sent_tags, low_frequency_accuracy, counter_convert, low_frequency_f1
 from .metrics import Metrics
 from seqeval.metrics import classification_report
 
@@ -11,9 +11,12 @@ from seqeval.metrics import classification_report
 def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=False, counter=None):
 
     # train CRF
+    train_word_lists = [sent.words for sent in train_data] 
     train_gold_labels = [sent.gold_labels for sent in train_data]
     test_tag_lists = [sent.gold_labels for sent in test_data]
     test_word_lists = [sent.words for sent in test_data] 
+    sent_train_tags = get_sent_tags(train_word_lists, train_gold_labels)
+    train_test_counter = counter_convert(sent_train_tags, counter)
 
     crf_model = CRFModel()
     crf_model.train(train_data, train_gold_labels, tagged=True)
@@ -27,8 +30,11 @@ def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=Fa
     elif entity_level and counter:
         sent_test_tags = get_sent_tags(test_word_lists, test_tag_lists)
         sent_pred_tags = get_sent_tags(test_word_lists, pred_tag_lists)
-        accuracy = low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter)
-        print('Accuracy:', accuracy)
+        # accuracy = low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter)
+        # print('Accuracy:', accuracy)
+        scores = low_frequency_f1(sent_test_tags, sent_pred_tags, train_test_counter)
+        for key, score in scores.items():
+            print('{}: f1 {:.4f}, precision {:.4f}, recall {:.4f}'.format(key, score['f1'], score['p'], score['r']))
     else:
         metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
         metrics.report_scores()
@@ -42,6 +48,8 @@ def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False, co
     # train CRF
     train_word_lists, train_tag_lists = train_data
     test_word_lists, test_tag_lists = test_data
+    sent_train_tags = get_sent_tags(train_word_lists, train_tag_lists)
+    train_test_counter = counter_convert(sent_train_tags, counter)
 
     crf_model = CRFModel()
     crf_model.train(train_word_lists, train_tag_lists)
@@ -56,8 +64,11 @@ def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False, co
     elif entity_level and counter:
         sent_test_tags = get_sent_tags(test_word_lists, test_tag_lists)
         sent_pred_tags = get_sent_tags(test_word_lists, pred_tag_lists)
-        accuracy = low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter)
-        print('Accuracy:', accuracy)
+        # accuracy = low_frequency_accuracy(sent_test_tags, sent_pred_tags, counter)
+        # print('Accuracy:', accuracy)
+        scores = low_frequency_f1(sent_test_tags, sent_pred_tags, train_test_counter)
+        for key, score in scores.items():
+            print('{}: f1 {:.4f}, precision {:.4f}, recall {:.4f}'.format(key, score['f1'], score['p'], score['r']))
     else:
         metrics = Metrics(test_tag_lists, pred_tag_lists, remove_O=remove_O)
         metrics.report_scores()
