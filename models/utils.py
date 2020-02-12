@@ -5,66 +5,84 @@ import collections
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def counter_convert(sent_tags, counter):
+def counter_convert(sent_tags, counter, zero_one=False):
     """Covert counter to 1, 2, and more categories
 
-    Train   Test    Evaluation-Point
-    0       0            None
-    0       1  (0-1)      
-    0       >1 (0-2)     Zero-shot, performance on unseen entity
+    If zero_one is False, we divide the dataset into 6 categories:
+        Train   Test    Evaluation-Point
+        0       0            None
+        0       1  (0-1)      
+        0       >1 (0-2)     Zero-shot, performance on unseen entity
 
-    1       0            None
-    1       1  (1-1)      
-    1       >1 (1-2)     One-shot, performance on low frequency entity
+        1       0            None
+        1       1  (1-1)      
+        1       >1 (1-2)     One-shot, performance on low frequency entity
 
-    >1      0            None
-    >1      1  (2-1)
-    >1      >1 (2-2)     Training on normal data
+        >1      0            None
+        >1      1  (2-1)
+        >1      >1 (2-2)     Training on normal data
+    
+    If zero_one is True, we divide the dataset into 3 categories, in zero shot, one shot level:
+        Train   Test        Evaluation-Point
+        0       1 + >1      Zero-shot, performance on unseen entity
 
+        1       1 + >1      One-shot, performance on low frequency entity
+
+        >1      1 + >1      Training on normal data
     """
-    result = {'0-1': set(), '0-2': set(), '1-1': set(), 
-              '1-2':set(), '2-1': set(), '2-2': set()}
-
     # convert fre-name to name-fre counter
     name_counter = {}
     for frequency, name_list in counter.items():
         for name in name_list:
             name_counter[name] = int(frequency)
 
-    # training set counter: {'パーク建設': 3, '経産広告社': 1, ...}
+    # convert to training set counter: {'パーク建設': 3, '経産広告社': 1, ...}
     sent_counter = collections.defaultdict(int)
     for sent in sent_tags:
         for tag in sent: 
             sent_counter[tag['text']] += 1
+            
+    if not zero_one:
+        result = {'0-1': set(), '0-2': set(), '1-1': set(), 
+                '1-2':set(), '2-1': set(), '2-2': set()}
 
-    # (0, xxx)
-    for name, count in name_counter.items():
-        if name not in sent_counter:
-            if name in counter['1']: # (0, 1)
-                result['0-1'].add(name)
-            else: # (0, 2)
-                result['0-2'].add(name)
-
-    
-    for name, count in sent_counter.items():
-        # (1, xxx)
-        if count == 1: 
-            if name in counter['1']: # (1, 0)
-                continue
-            elif name in counter['2']: # (1, 1):
-                result['1-1'].add(name)
-            else: # (1, 2)
-                result['1-2'].add(name)
-
-        # (2, xxx)
-        if count > 1:
-            if name in name_counter:
-                if count == name_counter[name]: # (2, 0)
+        # (0, xxx)
+        for name, count in name_counter.items():
+            if name not in sent_counter:
+                if name in counter['1']: # (0, 1)
+                    result['0-1'].add(name)
+                else: # (0, 2)
+                    result['0-2'].add(name)
+        
+        for name, count in sent_counter.items():
+            # (1, xxx)
+            if count == 1: 
+                if name in counter['1']: # (1, 0)
                     continue
-                elif name_counter[name] - count == 1: # (2, 1) 
-                    result['2-1'].add(name)
-                else: # (2, 2)
-                    result['2-2'].add(name)
+                elif name in counter['2']: # (1, 1):
+                    result['1-1'].add(name)
+                else: # (1, 2)
+                    result['1-2'].add(name)
+
+            # (2, xxx)
+            if count > 1:
+                if name in name_counter:
+                    if count == name_counter[name]: # (2, 0)
+                        continue
+                    elif name_counter[name] - count == 1: # (2, 1) 
+                        result['2-1'].add(name)
+                    else: # (2, 2)
+                        result['2-2'].add(name)
+    
+    else: # zero_one is True
+        result = {'0': set(), '1': set(), '2': set()}
+        for name in name_counter.keys():
+            if name not in sent_counter:
+                result['0'].add(name)
+            elif name in sent_counter and sent_counter[name] == 1:
+                result['1'].add(name)
+            else:
+                result['2'].add(name)
 
     return result
 
@@ -74,7 +92,7 @@ def get_catetory(counter, name):
             return k
     return '2-2'
 
-def low_frequency_f1(sent_test_tags, sent_pred_tags, counter):
+def low_frequency_f1(sent_test_tags, sent_pred_tags, counter, zero_one=True):
     """
     sent_test_tags: # [[{'start_idx': 7, 'end_idx': 12, 'text': '東芝キヤリア'}, {'start_idx': 14, 'end_idx': 19, 'text': 'ダイキン工業'}], 
                     [{'start_idx': 0, 'end_idx': 1, 'text': '東芝'}, {'start_idx': 27, 'end_idx': 32, 'text': 'ダイキン工業'}]]
@@ -95,19 +113,27 @@ def low_frequency_f1(sent_test_tags, sent_pred_tags, counter):
               '2-1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
               '2-2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0}}
     """
-    result = {'0-1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
-              '0-2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
-              '1-1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
-              '1-2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
-              '2-1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
-              '2-2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0}}
+    if zero_one:
+        result = {'0': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
+                  '1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
+                  '2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0}}
+        score = {'0': {'p': 0, 'r': 0, 'f1': 0},
+                 '1': {'p': 0, 'r': 0, 'f1': 0},
+                 '2': {'p': 0, 'r': 0, 'f1': 0}}
+    else:
+        result = {'0-1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
+                '0-2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
+                '1-1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
+                '1-2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
+                '2-1': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0},
+                '2-2': {'TP': 0, 'TN': 0, 'FP': 0, 'FN': 0}}
 
-    score = {'0-1': {'p': 0, 'r': 0, 'f1': 0},
-              '0-2': {'p': 0, 'r': 0, 'f1': 0},
-              '1-1': {'p': 0, 'r': 0, 'f1': 0},
-              '1-2': {'p': 0, 'r': 0, 'f1': 0},
-              '2-1': {'p': 0, 'r': 0, 'f1': 0},
-              '2-2': {'p': 0, 'r': 0, 'f1': 0}}
+        score = {'0-1': {'p': 0, 'r': 0, 'f1': 0},
+                '0-2': {'p': 0, 'r': 0, 'f1': 0},
+                '1-1': {'p': 0, 'r': 0, 'f1': 0},
+                '1-2': {'p': 0, 'r': 0, 'f1': 0},
+                '2-1': {'p': 0, 'r': 0, 'f1': 0},
+                '2-2': {'p': 0, 'r': 0, 'f1': 0}}
 
     # confusion matrix
     for test_tags, pred_tags in zip(sent_test_tags, sent_pred_tags):

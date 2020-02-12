@@ -8,7 +8,7 @@ from .metrics import Metrics
 from seqeval.metrics import classification_report
 
 
-def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=False, counter=None):
+def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=False, counter=None, zero_one=True):
 
     # train CRF
     train_word_lists = [sent.words for sent in train_data] 
@@ -16,7 +16,8 @@ def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=Fa
     test_tag_lists = [sent.gold_labels for sent in test_data]
     test_word_lists = [sent.words for sent in test_data] 
     sent_train_tags = get_sent_tags(train_word_lists, train_gold_labels)
-    train_test_counter = counter_convert(sent_train_tags, counter)
+    train_test_counter = counter_convert(sent_train_tags, counter, zero_one) # if False: result = {'0-1': set(), '0-2': set(), '1-1': set(), '1-2':set(), '2-1': set(), '2-2': set()}
+                                                                                  # if True: result = {'0': set(), '1': set(), '2': set()}
 
     crf_model = CRFModel()
     crf_model.train(train_data, train_gold_labels, tagged=True)
@@ -43,13 +44,14 @@ def crf_train_eval_tagged(train_data, test_data, remove_O=False, entity_level=Fa
     return pred_tag_lists
 
 
-def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False, counter=None):
+def crf_train_eval(train_data, test_data, remove_O=False, entity_level=False, counter=None, zero_one=True):
 
     # train CRF
     train_word_lists, train_tag_lists = train_data
     test_word_lists, test_tag_lists = test_data
     sent_train_tags = get_sent_tags(train_word_lists, train_tag_lists)
-    train_test_counter = counter_convert(sent_train_tags, counter)
+    train_test_counter = counter_convert(sent_train_tags, counter, zero_one) # if False: result = {'0-1': set(), '0-2': set(), '1-1': set(), '1-2':set(), '2-1': set(), '2-2': set()}
+                                                                                  # if True: result = {'0': set(), '1': set(), '2': set()}
 
     crf_model = CRFModel()
     crf_model.train(train_word_lists, train_tag_lists)

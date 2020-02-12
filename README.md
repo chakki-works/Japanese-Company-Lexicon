@@ -304,23 +304,52 @@ Run the below command:
 python main.py
 ``` -->
 
+We frist divide the result into 3 categories:
 
-The entity level result:
 
-```
-  Train   Test    Evaluation-Point
-  0       0            None
-  0       1  (0-1)     Zero-shot, performance on unseen entity 
-  0       >1 (0-2)     Zero-shot, performance on unseen entity
+| Category | Desciption                                       | Evaluation                                    |
+| -------- | ------------------------------------------------ | --------------------------------------------- |
+| 0        | the entity not exist in the training set         | Zero-shot, performance on unseen entity       |
+| 1        | the entity only exists once in the training set  | One-shot, performance on low frequency entity |
+| 2        | the entity exists many times in the training set | Training on normal data                       |
 
-  1       0            None
-  1       1  (1-1)     One-shot, performance on low frequency entity 
-  1       >1 (1-2)     One-shot, performance on low frequency entity
 
-  >1      0            None
-  >1      1  (2-1)     Training on normal data
-  >1      >1 (2-2)     Training on normal data
-```
+
+
+| Single Lexicon             | BCCWJ<br />F1(CRF) |            |        | Mainichi<br />F1(CRF) |            |        |
+| -------------------------- | ------------------ | ---------- | ------ | --------------------- | ---------- | ------ |
+|                            | 0                  | 1          | 2      | 0                     | 1          | 2      |
+| Gold                       | 0.6667             | 0.8511     | 0.9024 | 0.4396                | 0.5437     | 0.5828 |
+| JCL-slim                   | 0.6854             | 0.8454     | 0.8655 | 0.4570                | 0.5372     | 0.5829 |
+| JCL-meidum                 | 0.6686             | **0.8687** | 0.8810 | 0.4452                | 0.5473     | 0.5808 |
+| JCL-full                   | **0.6978**         | 0.8119     | 0.8383 | **0.4603**            | 0.5525     | 0.5783 |
+| Juman                      | 0.6706             | 0.8352     | 0.8571 | 0.4436                | **0.5558** | 0.5778 |
+| IPAdic                     | 0.6927             | 0.8367     | 0.8621 | 0.4462                | 0.5531     | 0.5709 |
+| NEologd                    | 0.6626             | 0.8400     | 0.8671 | 0.4514                | 0.5509     | 0.5750 |
+| **Multiple Lexicon**       |                    |            |        |                       |            |        |
+| IPAdic-NEologd             | 0.6957             | **0.8600** | 0.8315 | 0.4593                | **0.5503** | 0.5719 |
+| IPAdic-NEologd-JCL(medium) | **0.7209**         | 0.8454     | 0.8675 | **0.4649**            | 0.5463     | 0.5749 |
+
+
+From the result above, we can see JCLdic boost the zero-shot and one-shot performance a lot, especially on the BCCWJ dataset.
+
+
+
+
+We could further divide these 3 categories to 6 categories:
+
+
+| Category | Desciption                                                   | Evaluation                                    |
+| -------- | ------------------------------------------------------------ | --------------------------------------------- |
+| 0-1      | Not shown in training set, but only shown once in test set   | Zero-shot, performance on unseen entity       |
+| 0-2      | Not shown in training set, but shown more than 2 times in test set | Zero-shot, performance on unseen entity       |
+| 1-1      | Shown once in training set, and also shown once in test set  | One-shot, performance on low frequency entity |
+| 1-2      | Shown once in training set, and shown more than 2 times in test set | One-shot, performance on low frequency entity |
+| 2-1      | Shown more than 2 times in training set, but only shown once in test set | Training on normal data                       |
+| 2-2      | Shown more than 2 times in training set, and also shown more than 2 times in test set | Training on normal data                       |
+
+
+
 
 
 
