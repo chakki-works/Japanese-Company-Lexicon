@@ -309,11 +309,22 @@ We frist divide the result into 3 categories:
 
 | Category | Desciption                                       | Evaluation                                    |
 | -------- | ------------------------------------------------ | --------------------------------------------- |
-| 0        | the entity not exist in the training set         | Zero-shot, performance on unseen entity       |
-| 1        | the entity only exists once in the training set  | One-shot, performance on low frequency entity |
-| 2        | the entity exists many times in the training set | Training on normal data                       |
+| Zero       | the entity not exist in the training set         | Zero-shot, performance on unseen entity       |
+| One        | the entity only exists once in the training set  | One-shot, performance on low frequency entity |
+| More       | the entity exists many times in the training set | Training on normal data                       |
+
+The dataset statistics: 
 
 
+
+| Dataset                                                      | BCCWJ                                | Mainichi                            |
+| ------------------------------------------------------------ | ------------------------------------ | ----------------------------------- |
+| Company Samples/Sentence                                     | 1364                                 | 3027                                |
+| Company Entities                                             | 1704                                 | 4664                                |
+| Unique Company Entities                                      | 897                                  | 1580                                |
+| Number of Unique Company <br />Entities Exist in Training Set | Zero: 226<br/>One: 472<br/>More: 199 | Zero: 1440<br/>One: 49<br/>More: 91 |
+
+The experiment results:
 
 
 | Single Lexicon             | BCCWJ<br />F1(CRF) |            |        | Mainichi<br />F1(CRF) |            |        |
@@ -334,7 +345,7 @@ We frist divide the result into 3 categories:
 From the result above, we can see JCLdic boost the zero-shot and one-shot performance a lot, especially on the BCCWJ dataset.
 
 
-
+### (Extra) Dictionary feature for low frequence company names on entity level
 
 We could further divide these 3 categories to 6 categories:
 
