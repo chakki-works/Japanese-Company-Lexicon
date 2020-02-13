@@ -141,15 +141,15 @@ def low_frequency_f1(sent_test_tags, sent_pred_tags, counter, zero_one=True):
             category = get_catetory(counter, test_tag['text'])
             result_hit_count = 0
             for pred_tag in pred_tags:
-                if pred_tag['start_idx'] == test_tag['start_idx'] or pred_tag['end_idx'] == test_tag['end_idx'] and pred_tag['text'] == test_tag['text']: # TP
+                if pred_tag['start_idx'] == test_tag['start_idx'] and pred_tag['end_idx'] == test_tag['end_idx'] and pred_tag['text'] == test_tag['text']: # TP
                     result[category]['TP'] += 1
                     result_hit_count += 1
                 elif ((pred_tag['start_idx'] == test_tag['start_idx']) or (pred_tag['end_idx'] == test_tag['end_idx'])) and pred_tag['text'] != test_tag['text']: # boundry error, count FN, FP
                     result[category]['FP'] += 1
                     result[category]['FN'] += 1
                     result_hit_count += 1
-            if result_hit_count != len(pred_tags): # FN, model cannot make a prediction
-               result[category]['FN'] += len(pred_tags) - result_hit_count
+            if result_hit_count != 1: # FN, model cannot make a prediction for test_tag
+               result[category]['FN'] += 1
             result_hit_count = 0 # reset to default
             
     # precision, recall, f1

@@ -327,25 +327,29 @@ The dataset statistics:
 The experiment results:
 
 
-| Single Lexicon             | BCCWJ<br />F1(CRF) |            |        | Mainichi<br />F1(CRF) |            |        |
-| -------------------------- | ------------------ | ---------- | ------ | --------------------- | ---------- | ------ |
-|                            | 0                  | 1          | 2      | 0                     | 1          | 2      |
-| Gold                       | 0.6667             | 0.8511     | 0.9024 | 0.4396                | 0.5437     | 0.5828 |
-| JCL-slim                   | 0.6854             | 0.8454     | 0.8655 | 0.4570                | 0.5372     | 0.5829 |
-| JCL-meidum                 | 0.6686             | **0.8687** | 0.8810 | 0.4452                | 0.5473     | 0.5808 |
-| JCL-full                   | **0.6978**         | 0.8119     | 0.8383 | **0.4603**            | 0.5525     | 0.5783 |
-| Juman                      | 0.6706             | 0.8352     | 0.8571 | 0.4436                | **0.5558** | 0.5778 |
-| IPAdic                     | 0.6927             | 0.8367     | 0.8621 | 0.4462                | 0.5531     | 0.5709 |
-| NEologd                    | 0.6626             | 0.8400     | 0.8671 | 0.4514                | 0.5509     | 0.5750 |
-| **Multiple Lexicon**       |                    |            |        |                       |            |        |
-| IPAdic-NEologd             | 0.6957             | **0.8600** | 0.8315 | 0.4593                | **0.5503** | 0.5719 |
-| IPAdic-NEologd-JCL(medium) | **0.7209**         | 0.8454     | 0.8675 | **0.4649**            | 0.5463     | 0.5749 |
+
+| Single Lexicon             | BCCWJ<br />F1(CRF) |            |            | Mainichi<br />F1(CRF) |            |            |
+| -------------------------- | ------------------ | ---------- | ---------- | --------------------- | ---------- | ---------- |
+|                            | Zero               | One        | More       | Zero                  | One        | More       |
+| Gold                       | 0.4080             | 0.8211     | 0.9091     | 0.4970                | 0.8284     | 0.9353     |
+| JCL-slim                   | 0.4748             | 0.8333     | 0.9091     | 0.5345                | 0.8075     | **0.9509** |
+| JCL-meidum                 | 0.4530             | **0.8660** | 0.9091     | 0.5151                | 0.8061     | 0.9503     |
+| JCL-full                   | **0.5411**         | 0.8333     | 0.8933     | **0.5630**            | 0.8467     | 0.9476     |
+| Juman                      | 0.4506             | 0.7957     | 0.9032     | 0.5113                | **0.8655** | 0.9431     |
+| IPAdic                     | 0.4926             | 0.8421     | **0.9161** | 0.5369                | 0.8633     | 0.9419     |
+| NEologd                    | 0.4382             | 0.8454     | 0.9161     | 0.5343                | 0.8456     | 0.9359     |
+| **Multiple Lexicon**       |                    |            |            |                       |            |            |
+| IPAdic-NEologd             | 0.5276             | **0.8600** | 0.9091     | **0.5556**            | **0.8623** | 0.9432     |
+| IPAdic-NEologd-JCL(medium) | **0.5198**         | 0.8421     | 0.8947     | 0.5484                | 0.8487     | **0.9476** |
+
+
+
 
 
 From the result above, we can see JCLdic boost the zero-shot and one-shot performance a lot, especially on the BCCWJ dataset.
 
 
-### (Extra) Dictionary feature for low frequence company names on entity level
+<!-- ### (Extra) Dictionary feature for low frequence company names on entity level
 
 We could further divide these 3 categories to 6 categories:
 
@@ -405,7 +409,7 @@ For BCCWJ dataset, after adding dictionary features, JCL-full boosts the f1 from
 
 
 
-For Mainichi dataset, after adding dictionary features, JCL-slim boosts the f1 from 0.3848 to 0.4244 for 0-2, and JCL-full boosts the f1 from 0.4921 to 0.5204. 
+For Mainichi dataset, after adding dictionary features, JCL-slim boosts the f1 from 0.3848 to 0.4244 for 0-2, and JCL-full boosts the f1 from 0.4921 to 0.5204.  -->
 
 
 ## Citation
