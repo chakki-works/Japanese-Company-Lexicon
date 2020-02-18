@@ -24,16 +24,7 @@ echo Create Directories...
 mkdir -p data/hojin/{csv,zip,output}
 echo "  $HOJIN_ZIP, $HOJIN_CSV, $HOJIN_OUTPUT"
 
-
-### Download Hojin Zip files ###
-if [ -z "$(ls -A -- "$HOJIN_ZIP")" ]
-then
-  echo "Begin downloading hojin ZIP files..."
-  python tools/downloader.py 
-else
-  echo "$HOJIN_ZIP is not empty."
-fi
-
+echo "Make sure you have downloaded ZIP files to data/hojin/zip"
 ### Extract Hojin CSV file ###
 if [ -z "$(ls -A -- "$HOJIN_ZIP")" ]
 then

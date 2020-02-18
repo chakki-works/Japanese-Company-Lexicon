@@ -1,4 +1,4 @@
-# Japanese Company Lexicon (JCL)
+# Japanese Company Lexicon (JCLdic)
 
 The high coverage lexicon for Japanese company recognition.
 
@@ -16,7 +16,7 @@ Our goal is to build the enterprise knowledge graph, so we only consider the com
 
 The full version contains all kinds of names, including digits, one character  aliases, etc. These abnormal names will cause annotation error for NER task. We recommend use the JCL_medium version or JCL_slim version. 
 
-These realease versions are easier to use than the version we used in the papaer. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only perserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but perseve `'株式会社KADOKAWA'`. If you deal with text with JCL, we recommend first normalize the text to hankaku format.
+These realease versions are easier to use than the version we used in the papaer. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only perserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but perseve `'株式会社KADOKAWA'`. If you deal with text with JCLdic, we recommend first normalize the text to hankaku format.
 
 ```python
 import unicodedata
@@ -40,9 +40,9 @@ text = unicodedata.normalize('NFKC', text) # convert zenkaku to hankaku
 
 
 
-## JCL Generation Process
+## JCLdic Generation Process
 
-Instead of downloading the data, you can even build the JCL lexicon from scratch by following the below instructions. 
+Instead of downloading the data, you can even build the JCLdic from scratch by following the below instructions. 
 
 ### Data Preparation
 
@@ -54,6 +54,7 @@ pip install -r requirements.txt
 
 If you want to downlaod the data by Selenium, you have to download the ChromeDriver. First check your Chrome version, and then download the corresponding version of ChromeDriver from [here](https://chromedriver.chromium.org/downloads). 
 
+
 Uncompressing ZIP file to get `chromedriver`, then move it to target directory:
 ```
 cd $HOME/Downloads
@@ -61,11 +62,17 @@ unzip chromedriver_mac64.zip
 mv chromedriver /usr/local/bin
 ```
 
-Downloading hojin data:
+We create JCLdic according to the original data from [National Tax Agency Corporate Number Publication Site](https://www.houjin-bangou.nta.go.jp/) (国税庁法人番号公表サイト). Please download the ZIP files data from the below site:
+
+- CSV形式・Unicode: https://www.houjin-bangou.nta.go.jp/download/zenken/
+
+
+Put the ZIP files to `data/hojin/zip` directory, and run below scipt to preprocess the data:
 ```bash
 sh scripts/download.sh
 ```
 
+Below directories will be generated automaticlly, but you need to create `data/hojin/zip` directory manually to store the ZIP files in the first place. 
 
 ```bash
 .
@@ -81,18 +88,18 @@ sh scripts/download.sh
 │   │   └── output            # processed lexicons
 │   └── hojin
 │       ├── csv               # downloaded hojin data
-│       ├── output            # processed JCL lexicon
+│       ├── output            # processed JCLdic
 │       └── zip               # downloaded hojin data
 ```
 
-### JCL Generation
+### JCLdic Generation
 
 Generating alias
 ```bash
 sh scripts/generate_alias.sh
 ```
 
-Untill now, the JCL lexicon is prepared. 
+Untill now, the JCLdic is prepared. 
 
 If you want to get the MeCab format:
 ```
@@ -101,7 +108,7 @@ python tools/save_mecab_format.py
 
 ### Evaluation
 
-Below result is based on the latest version of JCL, which might be different with the performance of the paper reported. 
+Below result is based on the latest version of JCLdic, which might be different with the performance of the paper reported. 
 
 
 #### Datasets, dicionaries, and annotated datasets preparation
