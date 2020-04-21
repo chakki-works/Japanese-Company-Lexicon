@@ -3,6 +3,7 @@ import json
 import unicodedata
 from typing import List
 from collections import OrderedDict, Counter, defaultdict
+import codecs
 
 import pandas as pd
 from tqdm import tqdm
@@ -58,9 +59,12 @@ class Company:
   def parse_csv(self, file_paths: List[str]) -> None:
     """Parse all csv file to get company related field
     """
-    print("=== Read CSV files... ==="")
+    print("=== Read CSV files... ===")
     for path in tqdm(file_paths):
-      df = pd.read_csv(path, names=self.column_names)
+      
+      with codecs.open(path, "r", "Shift-JIS", "ignore") as file:
+        df = pd.read_table(file, names=self.column_names,delimiter=",")
+            
       self.total_data += df.shape[0]
       df = df[df['kind'].isin([301, 302, 305])] # Only reserve 301, 302, 305（株式会社，有限会社，合同会社）
       # df['kind'] = df['kind'].map(kind_map) # Change kind to kanji representation
@@ -93,7 +97,7 @@ class Company:
     print("=== DONE! ===\n")
   
   def save_names(self, output_file) -> None:
-    print("=== Save companies names and frequency to CSV... ==="")
+    print("=== Save companies names and frequency to CSV... ===")
     with open(output_file, 'w', encoding='utf-8') as f:
       self.names = {k: v for k, v in sorted(self.names.items(), key=lambda item: item[1], reverse=True)}
       for name, value in tqdm(self.names.items()):
