@@ -65,7 +65,7 @@ class Downloader:
     log_path = Path(self.download_directory)
     headless_log_path = Path.joinpath(log_path.parent, 'headless_log') # ../../hojin/headless_log
     browser = webdriver.Chrome(options=options, service_log_path=headless_log_path)
-    # downlaoding process with retry
+    # downloading process with retry
     try:
       # find all clickable downloading elements
       browser.get(self.url)

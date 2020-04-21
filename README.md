@@ -7,16 +7,16 @@ The high coverage lexicon for Japanese company recognition.
 We provide two kinds of format. The **CSV** format contains one name per line, and the [MeCab format](https://gist.github.com/Kimtaro/ab137870ad4a385b2d79) contains one record per line:
 
 
-- JCL_slim (7067216, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.dic.zip)): no furigana, no extra enNames, no ditital names, the name length is longer than 2 and shorter than 30.
-- JCL_medium (7555163, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.dic.zip)): no ditital names, the name length is longer than 2 and shorter than 30. 
+- JCL_slim (7067216, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.dic.zip)): no furigana, no extra enNames, no digital names, the name length is longer than 2 and shorter than 30.
+- JCL_medium (7555163, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.dic.zip)): no digital names, the name length is longer than 2 and shorter than 30. 
 - JCL_full (8491326, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.dic.zip)): without any limitation
 
-Our goal is to build the enterprise knowledge graph, so we only consider the companies that conducts economic activity for commercial purposes. These companies are denoted as Stock Compay (株式会社), Limited Company (有限会社), and Limitted Liability Company (合同会社). 
+Our goal is to build the enterprise knowledge graph, so we only consider the companies that conducts economic activity for commercial purposes. These companies are denoted as Stock Company (株式会社), Limited Company (有限会社), and Limited Liability Company (合同会社). 
 
 
 The full version contains all kinds of names, including digits, one character  aliases, etc. These abnormal names will cause annotation error for NER task. We recommend use the JCL_medium version or JCL_slim version. 
 
-These realease versions are easier to use than the version we used in the paper. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only perserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but perseve `'株式会社KADOKAWA'`. If you deal with text with JCLdic, we recommend first normalize the text to hankaku format.
+These release versions are easier to use than the version we used in the paper. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only preserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but preserve `'株式会社KADOKAWA'`. If you deal with text with JCLdic, we recommend first normalize the text to hankaku format.
 
 ```python
 import unicodedata
@@ -52,7 +52,7 @@ Instead of downloading the data, you can even build the JCLdic from scratch by f
 pip install -r requirements.txt
 ```
 
-If you want to downlaod the data by Selenium, you have to download the ChromeDriver. First check your Chrome version, and then download the corresponding version of ChromeDriver from [here](https://chromedriver.chromium.org/downloads). 
+If you want to download the data by Selenium, you have to download the ChromeDriver. First check your Chrome version, and then download the corresponding version of ChromeDriver from [here](https://chromedriver.chromium.org/downloads). 
 
 
 Uncompressing ZIP file to get `chromedriver`, then move it to target directory:
@@ -67,12 +67,12 @@ We create JCLdic according to the original data from [National Tax Agency Corpor
 - CSV形式・Unicode: https://www.houjin-bangou.nta.go.jp/download/zenken/
 
 
-Put the ZIP files to `data/hojin/zip` directory, and run below scipt to preprocess the data:
+Put the ZIP files to `data/hojin/zip` directory, and run below script to preprocess the data:
 ```bash
 sh scripts/download.sh
 ```
 
-Below directories will be generated automaticlly, but you need to create `data/hojin/zip` directory manually to store the ZIP files in the first place. 
+Below directories will be generated automatically, but you need to create `data/hojin/zip` directory manually to store the ZIP files in the first place. 
 
 ```bash
 .
@@ -99,7 +99,7 @@ Generating alias
 sh scripts/generate_alias.sh
 ```
 
-Untill now, the JCLdic is prepared. 
+Until now, the JCLdic is prepared. 
 
 If you want to get the MeCab format:
 ```
@@ -111,7 +111,7 @@ python tools/save_mecab_format.py
 Below result is based on the latest version of JCLdic, which might be different with the performance of the paper reported. 
 
 
-#### Datasets, dicionaries, and annotated datasets preparation
+#### Datasets, dictionaries, and annotated datasets preparation
 
 Because these datasets (Mainichi, BCCWJ) are not free, you should get the datasets by yourself. After you get the datasets, put them to `data/corpora/{bccwj,mainichi}` and run the below command:
 
@@ -134,7 +134,7 @@ If you want to compare other dictionaries, you could download it from below link
 # neologd
 # https://github.com/neologd/mecab-ipadic-neologd/blob/master/seed/mecab-user-dict-seed.20200109.csv.xz
 
-# 2 Prepare dicionaries 
+# 2 Prepare dictionaries 
 python tools/dictionary_preprocess.py
 ```
 
@@ -214,7 +214,7 @@ Following table is the extrinsic evaluation result. The best results are highlig
 
 ### Dictionary annotation as feature on token level
 
-The new experiment results are in the parentheses. We use the dictionary annotation as CRF feature, and the best results are highlighted. The result shows that the dictionary feature boost the performance, especilly the JCL. 
+The new experiment results are in the parentheses. We use the dictionary annotation as CRF feature, and the best results are highlighted. The result shows that the dictionary feature boost the performance, especially the JCL. 
 
 
 | Single Lexicon             | Mainichi F1         | BCCWJ F1            |
@@ -284,7 +284,7 @@ The entity level result:
 From `result1` and `result2`, we can see these dictionary are not suitable for annotating training label, but the dictionary feature do improve the performance in `result2`. 
 
 
-### Dictionary feature for low frequence company names on entity level
+### Dictionary feature for low frequency company names on entity level
 
 <!-- Make sure the `main.py` has following setting:
 
@@ -293,15 +293,15 @@ From `result1` and `result2`, we can see these dictionary are not suitable for a
 entity_level = True 
 # ...
 ### result 3 ###
-# bccwj: evaluate on low frequency compnay names 
+# bccwj: evaluate on low frequency company names 
 main(bccwj_paths, bccwj_glod, entity_level=entity_level, low_frequency=bccwj_counter)
-# mainichi: evaluate on low frequency compnay names
+# mainichi: evaluate on low frequency company names
 main(mainichi_paths, mainichi_glod, entity_level=entity_level, low_frequency=mainichi_counter)
 
 ### result 4 ###
-# bccwj: evaluate on low frequency compnay names, use dictionary as feature for CRF
+# bccwj: evaluate on low frequency company names, use dictionary as feature for CRF
 crf_tagged_pipeline(bccwj_paths, bccwj_glod, entity_level=entity_level, low_frequency=bccwj_counter)
-# mainichi: evaluate on low frequency compnay names, use dictionary as feature for CRF
+# mainichi: evaluate on low frequency company names, use dictionary as feature for CRF
 crf_tagged_pipeline(mainichi_paths, mainichi_glod, entity_level=entity_level, low_frequency=mainichi_counter) 
 ```
 
@@ -311,10 +311,10 @@ Run the below command:
 python main.py
 ``` -->
 
-We frist divide the result into 3 categories:
+We first divide the result into 3 categories:
 
 
-| Category | Desciption                                       | Evaluation                                    |
+| Category | Description                                       | Evaluation                                    |
 | -------- | ------------------------------------------------ | --------------------------------------------- |
 | Zero       | the entity not exist in the training set         | Zero-shot, performance on unseen entity       |
 | One        | the entity only exists once in the training set  | One-shot, performance on low frequency entity |
@@ -356,12 +356,12 @@ The experiment results:
 From the result above, we can see JCLdic boost the zero-shot and one-shot performance a lot, especially on the BCCWJ dataset.
 
 
-<!-- ### (Extra) Dictionary feature for low frequence company names on entity level
+<!-- ### (Extra) Dictionary feature for low frequency company names on entity level
 
 We could further divide these 3 categories to 6 categories:
 
 
-| Category | Desciption                                                   | Evaluation                                    |
+| Category | Description                                                   | Evaluation                                    |
 | -------- | ------------------------------------------------------------ | --------------------------------------------- |
 | 0-1      | Not shown in training set, but only shown once in test set   | Zero-shot, performance on unseen entity       |
 | 0-2      | Not shown in training set, but shown more than 2 times in test set | Zero-shot, performance on unseen entity       |

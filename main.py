@@ -157,15 +157,15 @@ if __name__ == "__main__":
     # crf_tagged_pipeline(mainichi_paths, mainichi_gold, entity_level=entity_level) 
     
     ### result 3 ###
-    # # bccwj: evaluate on low frequency compnay names 
+    # # bccwj: evaluate on low frequency company names 
     # main(bccwj_paths, bccwj_gold, entity_level=entity_level, low_frequency=bccwj_counter)
 
-    # # mainichi: evaluate on low frequency compnay names
+    # # mainichi: evaluate on low frequency company names
     # main(mainichi_paths, mainichi_gold, entity_level=entity_level, low_frequency=mainichi_counter)
     
     ### result 4 ###
-    # bccwj: evaluate on low frequency compnay names, use dictionary as feature for CRF
+    # bccwj: evaluate on low frequency company names, use dictionary as feature for CRF
     crf_tagged_pipeline(bccwj_paths, bccwj_gold, entity_level=entity_level, low_frequency=bccwj_counter)
 
-    # mainichi: evaluate on low frequency compnay names, use dictionary as feature for CRF
+    # mainichi: evaluate on low frequency company names, use dictionary as feature for CRF
     crf_tagged_pipeline(mainichi_paths, mainichi_gold, entity_level=entity_level, low_frequency=mainichi_counter) 
