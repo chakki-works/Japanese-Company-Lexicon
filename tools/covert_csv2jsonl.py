@@ -93,7 +93,7 @@ class Company:
     print("=== DONE! ===\n")
   
   def save_names(self, output_file) -> None:
-    print("=== Save companies names and frequency to CSV... ==="")
+    print("=== Save companies names and frequency to CSV... ===")
     with open(output_file, 'w', encoding='utf-8') as f:
       self.names = {k: v for k, v in sorted(self.names.items(), key=lambda item: item[1], reverse=True)}
       for name, value in tqdm(self.names.items()):
