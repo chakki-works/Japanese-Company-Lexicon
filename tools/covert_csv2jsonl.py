@@ -3,7 +3,6 @@ import json
 import unicodedata
 from typing import List
 from collections import OrderedDict, Counter, defaultdict
-import codecs
 
 import pandas as pd
 from tqdm import tqdm
@@ -62,8 +61,7 @@ class Company:
     print("=== Read CSV files... ===")
     for path in tqdm(file_paths):
       
-      with codecs.open(path, "r", "Shift-JIS", "ignore") as file:
-        df = pd.read_table(file, names=self.column_names,delimiter=",")
+      df = pd.read_csv(path, names=self.column_names)
             
       self.total_data += df.shape[0]
       df = df[df['kind'].isin([301, 302, 305])] # Only reserve 301, 302, 305（株式会社，有限会社，合同会社）
