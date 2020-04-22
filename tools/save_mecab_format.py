@@ -2,6 +2,8 @@ import os
 import json
 from pathlib import Path
 
+from tqdm import tqdm
+
 from settings import ROOT_DIR
 
 lower_length = 2
@@ -24,21 +26,21 @@ def save_mecab(output_path, lines, full=True):
     full: True means output the full version of JCL, no need to filter
   """
   with open(output_path, 'w', encoding='utf-8') as f:
-    for line in lines:
+    for line in tqdm(lines):
       key = list(line.keys())[0]
       values = line[key]
       for alias in values:
-        if ',' not in alias:          
-          if full:
+        if ',' in alias:
+          key = key.replace(',', '')
+          alias = alias.replace(',', '')
+        if full:
+          record = f'{alias},1292,1292,4000,名詞,固有名詞,組織,*,*,*,{key},*,*\n'
+          f.write(record)
+        else:
+          if len(alias) > lower_length and len(alias) < upper_length and not alias.isdigit():
             record = f'{alias},1292,1292,4000,名詞,固有名詞,組織,*,*,*,{key},*,*\n'
             f.write(record)
-          else:
-            if len(alias) > lower_length and len(alias) < upper_length and not alias.isdigit():
-              record = f'{alias},1292,1292,4000,名詞,固有名詞,組織,*,*,*,{key},*,*\n'
-              f.write(record)
                 
- 
-
 
 def pipeline(dict_path):
   """Save dict to mecab format
@@ -53,15 +55,15 @@ def pipeline(dict_path):
   lines = read_dict(dict_path)
   if 'full' in path.name:
     print('Saving jcl_full ...')
-    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output/jcl_full.dic') 
+    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output/jcl_full_mecab.csv') 
     save_mecab(output_path, lines, full=True)
 
     print('Saving jcl_medium ...')
-    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output/jcl_medium.dic') 
+    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output/jcl_medium_mecab.csv') 
     save_mecab(output_path, lines, full=False)
   else:
     print('Saving jcl_slim ...')
-    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output/jcl_slim.dic') 
+    output_path = os.path.join(ROOT_DIR, 'data/dictionaries/output/jcl_slim_mecab.csv') 
     save_mecab(output_path, lines, full=False)
 
 if __name__ == "__main__":

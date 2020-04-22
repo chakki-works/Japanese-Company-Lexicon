@@ -1,15 +1,15 @@
 # Japanese Company Lexicon (JCLdic)
 
-The high coverage lexicon for Japanese company recognition.
+The repo of "High Coverage Lexicon for Japanese Company Name Recognition" [Paper](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/xu2020jcldic.pdf). 
 
 ## Download links
 
-We provide two kinds of format. The **CSV** format contains one name per line, and the [MeCab format](https://gist.github.com/Kimtaro/ab137870ad4a385b2d79) contains one record per line:
+We provide two kinds of format. The `CSV` format contains one name per line, and the [MeCab format](https://gist.github.com/Kimtaro/ab137870ad4a385b2d79) contains one record per line.  Users can directly open `MeCab CSV` format to check the record. The `MeCab Dic` format is compiled by MeCab, which can be used as the user dictionary of MeCab. [MeCab Dic usage](https://github.com/chakki-works/Japanese-Company-Lexicon/wiki/JCLdic-Usage)
 
 
-- JCL_slim (7067216, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.dic.zip)): no furigana, no extra enNames, no digital names, the name length is longer than 2 and shorter than 30.
-- JCL_medium (7555163, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.dic.zip)): no digital names, the name length is longer than 2 and shorter than 30. 
-- JCL_full (8491326, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.csv.zip), [MeCab](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.dic.zip)): without any limitation
+- JCL_slim (7067216, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.csv.zip), [MeCab CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim_mecab.csv.zip), [MeCab Dic](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim_mecab.dic.zip)): no furigana, no extra enNames, no digital names, the name length is longer than 2 and shorter than 30.
+- JCL_medium (7555163, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.csv.zip), [MeCab CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium_mecab.csv.zip), [MeCab Dic](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium_mecab.dic.zip)): no digital names, the name length is longer than 2 and shorter than 30. 
+- JCL_full (8491326, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.csv.zip), [MeCab CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab.csv.zip), [MeCab Dic 1](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab_1.dic.zip), [MeCab Dic 2](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab_2.dic.zip)): contain all kinds of names.
 
 Our goal is to build the enterprise knowledge graph, so we only consider the companies that conducts economic activity for commercial purposes. These companies are denoted as Stock Company (株式会社), Limited Company (有限会社), and Limited Liability Company (合同会社). 
 
@@ -37,7 +37,9 @@ text = unicodedata.normalize('NFKC', text) # convert zenkaku to hankaku
 | IPAdic-NEologd             | 4615340     | 257246               |
 | IPAdic-NEologd-JCL(medium) | 12093988    | 7722861              |
 
+## Usage
 
+See [wiki](https://github.com/chakki-works/Japanese-Company-Lexicon/wiki/JCLdic-Usage) page for detail usage.
 
 
 ## JCLdic Generation Process
@@ -64,7 +66,7 @@ mv chromedriver /usr/local/bin
 
 We create JCLdic according to the original data from [National Tax Agency Corporate Number Publication Site](https://www.houjin-bangou.nta.go.jp/) (国税庁法人番号公表サイト). Please download the ZIP files data from the below site:
 
-- CSV形式・Unicode: https://www.houjin-bangou.nta.go.jp/download/zenken/
+- [CSV形式・Unicode](https://www.houjin-bangou.nta.go.jp/download/zenken/#csv-unicode)
 
 
 Put the ZIP files to `data/hojin/zip` directory, and run below script to preprocess the data:
@@ -421,4 +423,16 @@ For Mainichi dataset, after adding dictionary features, JCL-slim boosts the f1 f
 
 ## Citation
 
-Release after March...
+Please use the following bibtex, when you refer JCLdic from your papers.
+
+```
+@INPROCEEDINGS{xu2020jcldic,
+    author    = {Xu Liang, Taniguchi Yasufumi and Nakayama Hiroki},
+    title     = {High Coverage Lexicon for Japanese Company Name Recognition},
+    booktitle = {Proceedings of the Twenty-six Annual Meeting of the Association for Natural Language Processing},
+    year      = {2020},
+    pages     = {NLP2020-B2-3},
+    publisher = {The Association for Natural Language Processing},
+}
+```
+
