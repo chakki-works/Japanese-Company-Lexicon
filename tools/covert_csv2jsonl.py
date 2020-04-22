@@ -60,9 +60,7 @@ class Company:
     """
     print("=== Read CSV files... ===")
     for path in tqdm(file_paths):
-      
       df = pd.read_csv(path, names=self.column_names)
-            
       self.total_data += df.shape[0]
       df = df[df['kind'].isin([301, 302, 305])] # Only reserve 301, 302, 305（株式会社，有限会社，合同会社）
       # df['kind'] = df['kind'].map(kind_map) # Change kind to kanji representation
