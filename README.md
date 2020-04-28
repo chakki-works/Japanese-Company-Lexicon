@@ -9,20 +9,14 @@ We provide two kinds of format. The `CSV` format contains one name per line, and
 
 - JCL_slim (7067216, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim.csv.zip), [MeCab CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim_mecab.csv.zip), [MeCab Dic](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_slim_mecab.dic.zip)): no furigana, no extra enNames, no digital names, the name length is longer than 2 and shorter than 30.
 - JCL_medium (7555163, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium.csv.zip), [MeCab CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium_mecab.csv.zip), [MeCab Dic](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_medium_mecab.dic.zip)): no digital names, the name length is longer than 2 and shorter than 30. 
-- JCL_full (8491326, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.csv.zip), [MeCab CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab.csv.zip), [MeCab Dic 1(5,000,000)](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab_1.dic.zip), [MeCab Dic 2(3,491,326)](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab_2.dic.zip)): contain all kinds of names.
+- JCL_full (8491326, [CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full.csv.zip), [MeCab CSV](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab.csv.zip), [MeCab Dic 1 (5,000,000)](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab_1.dic.zip), [MeCab Dic 2 (3,491,326)](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/jcl_full_mecab_2.dic.zip)): contain all kinds of names.
 
 Our goal is to build the enterprise knowledge graph, so we only consider the companies that conducts economic activity for commercial purposes. These companies are denoted as Stock Company (株式会社), Limited Company (有限会社), and Limited Liability Company (合同会社). 
 
 
 The full version contains all kinds of names, including digits, one character  aliases, etc. These abnormal names will cause annotation error for NER task. We recommend use the JCL_medium version or JCL_slim version. 
 
-These release versions are easier to use than the version we used in the paper. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only preserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but preserve `'株式会社KADOKAWA'`. If you deal with text with JCLdic, we recommend first normalize the text to hankaku format.
-
-```python
-import unicodedata
-
-text = unicodedata.normalize('NFKC', text) # convert zenkaku to hankaku
-```
+These release versions are easier to use than the version we used in the paper. Considering the trade-off between dictionary size and searching performance, we delete zenkaku(全角) names and only preserve the hankaku(半角) names. For example, we delete `'株式会社ＫＡＤＯＫＡＷＡ'` but preserve `'株式会社KADOKAWA'`. As for the normalization process, please read the Python section in [usage page](https://github.com/chakki-works/Japanese-Company-Lexicon/wiki/JCLdic-Usage).
 
 
 | **Single Lexicon**         | Total Names | Unique Company Names |
