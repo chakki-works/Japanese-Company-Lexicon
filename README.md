@@ -420,7 +420,7 @@ For Mainichi dataset, after adding dictionary features, JCL-slim boosts the f1 f
 Please use the following bibtex, when you refer JCLdic from your papers.
 
 ```
-@INPROCEEDINGS{xu2020jcldic,
+@INPROCEEDINGS{liang2020jcldic,
     author    = {Xu Liang, Taniguchi Yasufumi and Nakayama Hiroki},
     title     = {High Coverage Lexicon for Japanese Company Name Recognition},
     booktitle = {Proceedings of the Twenty-six Annual Meeting of the Association for Natural Language Processing},
