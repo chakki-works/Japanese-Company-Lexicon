@@ -65,7 +65,7 @@ We create JCLdic according to the original data from [National Tax Agency Corpor
 
 Put the ZIP files to `data/hojin/zip` directory, and run below script to preprocess the data:
 ```bash
-sh scripts/download.sh
+bash scripts/download.sh
 ```
 
 Below directories will be generated automatically, but you need to create `data/hojin/zip` directory manually to store the ZIP files in the first place. 
@@ -92,7 +92,7 @@ Below directories will be generated automatically, but you need to create `data/
 
 Generating alias
 ```bash
-sh scripts/generate_alias.sh
+bash scripts/generate_alias.sh
 ```
 
 Until now, the JCLdic is prepared. 

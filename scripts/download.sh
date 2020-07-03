@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ### Parameters ###
 DATA="data"
 HOJIN="data/hojin"
