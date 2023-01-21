@@ -1,6 +1,6 @@
 # Japanese Company Lexicon (JCLdic)
 
-The repo of "High Coverage Lexicon for Japanese Company Name Recognition" [Paper](https://s3-ap-northeast-1.amazonaws.com/chakki.jcl.jp/public/xu2020jcldic.pdf). 
+This repository contains the implementation for the paper: [High Coverage Lexicon for Japanese Company Name Recognition(ANLP 2020)](https://www.anlp.jp/proceedings/annual_meeting/2020/pdf_dir/B2-3.pdf) 
 
 ## Download links
 
